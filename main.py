@@ -20,7 +20,7 @@ def get_last_line_of_file(file_name):
         return f.readline().decode()
 
 
-def save_username_and_password(username, password, user_type):
+def save_user(username, password, user_type):
     print('Saving user info...')
     user_file = open('User.txt', 'rb')
     last_user_line = get_last_line_of_file('User.txt')
@@ -38,6 +38,7 @@ def save_username_and_password(username, password, user_type):
 
     user_file.write('U' + str(new_user_id) + "\t" + username + "\t" + password + "\t" + user_type + "\n")
     print('User saved successfully.')
+    user_file.close()
 
 
 def create_admin_user():
@@ -69,8 +70,7 @@ def create_admin_user():
                 else:
                     break
     # Create local data files
-    save_username_and_password(admin_username, admin_password, 'Admin')
-    open('Transactions.txt', 'w')
+    save_user(admin_username, admin_password, 'Admin')
 
 
 # Initialization of the program to check the user existence
@@ -79,6 +79,8 @@ def init():
     # Check local data files exist
     if os.path.isfile("Users.txt") and os.path.isfile("Transaction.txt"):
         create_admin_user()
+        transaction_file = open('Transaction.txt', 'w')
+        transaction_file.close()
     else:
         print('Local data exists.')
 
