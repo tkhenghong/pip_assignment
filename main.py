@@ -202,6 +202,10 @@ def create_customer_user():
     save_user(customer_username, customer_password, customer_name, 'Customer')
 
 
+def create_transaction(user_id, transaction_type, amount):
+    pass
+
+
 # Update balance of a user in Balance.txt file.
 # Returns True or False to indicate success.
 def update_balance(user_id, transaction_type, amount):
@@ -423,10 +427,6 @@ def init():
         transaction_file = open('Transaction.txt', 'w')
         transaction_file.close()
 
-# # Return a list of customer names with customer ID (Dictionaries)
-# def search_customer(search_term):
-#
-# def view_customer_transaction(customer_id):
 
 def main():
     init()
