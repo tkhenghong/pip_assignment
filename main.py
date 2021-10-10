@@ -11,6 +11,7 @@ import platform
 3. Transaction.txt (Store Customer's transaction)
 '''
 
+
 # GENERAL SNIPPETS
 # Strip whitespace first and check the string is empty or not: (https://stackoverflow.com/a/9573278)
 def string_is_blank(value):
@@ -204,6 +205,31 @@ def update_balance(user_info, transaction_type, amount):
     pass
 
 
+def login():
+    while True:
+        username = input('Please enter your username: ')
+        if string_is_blank(username):
+            print('Username is empty.')
+            continue
+        else:
+            break
+
+    while True:
+        password = input('Please enter your password: ')
+        if string_is_blank(password):
+            print('Password is empty.')
+            continue
+        else:
+            break
+    # Create local data files
+    user_info = get_user_info(username, password)
+
+    if not user_info:
+        print('Welcome, ', user_info[0])
+    else:
+        login()  # Recurring function (Reference: https://www.programiz.com/python-programming/recursion)
+
+
 # ID \t username \t password \t name \t user_type
 def view_customer_profile(user_info):
     print('View Customer Profile selected.')
@@ -245,9 +271,37 @@ def view_customer_transactions(user_info):
     pass
 
 
-# Display UIs
+def display_about_this_system():
+    pass
+
+
+# Display welcome menu.
 def display_welcome():
     print('Welcome to Online Banking System.')
+    while True:
+        try:
+            selection = int(input('Here are a list that you can perform: \n' +
+                                  '1. Login\n' +
+                                  '2. About this system' +
+                                  '3. Exit\n' +
+                                  'Enter the number of the functions above to proceed.'))
+
+            # Switch case in Python.
+            # References:   https://towardsdatascience.com/switch-case-statements-are-coming-to-python-d0caf7b2bfd3
+            #               https://stackoverflow.com/questions/60208/replacements-for-switch-statement-in-python
+            match selection:
+                case 1:
+                    login()
+                case 2:
+                    display_about_this_system()
+                case 3:
+                    print('Thank you for using this system. See you next time!')
+                    exit(0)
+                case _:
+                    print('Invalid input. Please try again.')
+        except ValueError:
+            print('Please enter a number.')
+            continue
 
 
 def display_admin_menu(user_info):
@@ -317,36 +371,10 @@ def init():
     if os.path.isfile('User.txt') and os.path.isfile('Transaction.txt'):
         print('Local data exists.')
         display_welcome()
-        login()
     else:
         create_admin_user()
         transaction_file = open('Transaction.txt', 'w')
         transaction_file.close()
-
-
-def login():
-    while True:
-        username = input('Please enter your username: ')
-        if string_is_blank(username):
-            print('Username is empty.')
-            continue
-        else:
-            break
-
-    while True:
-        password = input('Please enter your password: ')
-        if string_is_blank(password):
-            print('Password is empty.')
-            continue
-        else:
-            break
-    # Create local data files
-    user_info = get_user_info(username, password)
-
-    if not user_info:
-        print('Welcome, ', user_info[0])
-    else:
-        login()  # Recurring function (Reference: https://www.programiz.com/python-programming/recursion)
 
 
 def deposit(user_info):
