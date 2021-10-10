@@ -5,6 +5,7 @@ import os
 import platform
 
 
+# GENERAL SNIPPETS
 # Strip whitespace first and check the string is empty or not: (https://stackoverflow.com/a/9573278)
 def string_is_blank(value):
     return not (value and value.strip())
@@ -30,6 +31,28 @@ def clear_console():
             os.system('cls')
         case _:
             os.system('clear')
+
+
+# Get the info of a user in the User.txt data file.
+# Returns a list of strings. (Reference: https://stackoverflow.com/a/39397293)
+def get_user_info(username, password) -> list[str]:
+    if os.path.isfile('Users.txt'):
+        user_file = open('User.txt')
+        for line in user_file:
+            line = line.rstrip()
+            if username in line and password not in line:
+                print('Incorrect Username/password. Please try again.')
+            elif username in line and password in line:
+                # ID \t username \t password \t name \t user_type
+                # Returning ID, username and user type.
+                return [line[0], line[3], line[4]]
+            else:
+                print('User not found. Please try again.')
+        print('No user info found.')
+        return []
+    else:
+        print('No user info found.')
+        return []
 
 
 def get_username(user_type, default_username):
@@ -79,6 +102,7 @@ def get_user_name(user_type):
     return name
 
 
+# FUNCTIONS
 # ID \t username \t password \t name \t user_type
 # Save user (Admin/Customer) into User.txt file
 def save_user(username, password, name, user_type):
@@ -118,6 +142,17 @@ def create_admin_user():
 
     # Create local data files
     save_user(admin_username, admin_password, admin_name, 'Admin')
+
+
+# Register a new customer into the system
+def register_customer():
+    print('Register customer selected.')
+    customer_username = get_username('customer', None)
+    customer_password = get_user_password('customer', None)
+    customer_name = get_user_name('customer')
+
+    # Create local data files
+    save_user(customer_username, customer_password, customer_name, 'Customer')
 
 
 # Display UIs
@@ -192,17 +227,6 @@ def init():
         transaction_file.close()
 
 
-# Register a new customer into the system
-def register_customer():
-    print('Register customer selected.')
-    customer_username = get_username('customer', None)
-    customer_password = get_user_password('customer', None)
-    customer_name = get_user_name('customer')
-
-    # Create local data files
-    save_user(customer_username, customer_password, customer_name, 'Customer')
-
-
 def login():
     while True:
         username = input('Please enter your username: ')
@@ -226,28 +250,6 @@ def login():
         print('Welcome, ', user_info[0])
     else:
         login()  # Recurring function (Reference: https://www.programiz.com/python-programming/recursion)
-
-
-# Get the info of a user in the User.txt data file.
-# Returns a list of strings. (Reference: https://stackoverflow.com/a/39397293)
-def get_user_info(username, password) -> list[str]:
-    if os.path.isfile('Users.txt'):
-        user_file = open('User.txt')
-        for line in user_file:
-            line = line.rstrip()
-            if username in line and password not in line:
-                print('Incorrect Username/password. Please try again.')
-            elif username in line and password in line:
-                # ID \t username \t password \t name \t user_type
-                # Returning ID, username and user type.
-                return [line[0], line[3], line[4]]
-            else:
-                print('User not found. Please try again.')
-        print('No user info found.')
-        return []
-    else:
-        print('No user info found.')
-        return []
 
 
 # def deposit():
