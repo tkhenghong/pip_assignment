@@ -1,6 +1,7 @@
 # TEOH KHENG HONG
 # TP030562
-
+import decimal
+import fileinput
 import os
 import platform
 import sys
@@ -201,9 +202,40 @@ def create_customer_user():
     save_user(customer_username, customer_password, customer_name, 'Customer')
 
 
-def update_balance(user_info, transaction_type, amount):
+# Update balance of a user in Balance.txt file.
+# Returns True or False to indicate success.
+def update_balance(user_id, transaction_type, amount):
+    update_success = False
     # Update balance in Balance.txt file, allowing better organized data.
-    pass
+    if os.path.isfile('Balance.txt'):
+        for line in fileinput.input('Balance.txt', inplace=True):
+            stripped_line = line.rstrip()
+            if user_id in stripped_line:
+                user_balance = stripped_line.split('\t')
+                # Use Decimal for precise currency
+                # Reference: https://docs.python.org/3/library/decimal.html
+                balance = decimal.Decimal(user_balance[1])
+                if transaction_type == 'Deposit':
+                    balance += amount
+                    # Replace a line in file
+                    # Reference: https://stackoverflow.com/a/290494
+                    print('{}\t{}'.format(user_id, balance), end='')
+                    update_success = True
+                else:
+                    if balance < amount:
+                        print('Unable to perform withdrawal with that amount.')
+                    else:
+                        balance -= amount
+                        print('{}\t{}'.format(user_id, balance), end='')
+                        update_success = True
+                fileinput.close()
+
+    else:
+        user_file = open('Balance.txt', 'w')
+        if transaction_type == 'Deposit':
+            user_file.write(user_id + '\t' + '')
+            update_success = True
+    return update_success
 
 
 def login():
@@ -229,6 +261,18 @@ def login():
         print('Welcome, ', user_info[0])
     else:
         login()  # Recurring function (Reference: https://www.programiz.com/python-programming/recursion)
+
+
+def deposit(user_info):
+    # TODO
+    update_balance_success = update_balance(user_info[0], 'Deposit', 0)
+    pass
+
+
+def withdrawal(user_info):
+    # TODO
+    update_balance_success = update_balance(user_info[0], 'Withdrawal', 0)
+    pass
 
 
 # ID \t username \t password \t name \t user_type
@@ -350,9 +394,9 @@ def display_customer_menu(user_info):
 
             match selection:
                 case 1:
-                    pass
+                    deposit(user_info)
                 case 2:
-                    pass
+                    withdrawal(user_info)
                 case 3:
                     view_customer_profile(user_info)
                 case 4:
@@ -378,15 +422,6 @@ def init():
         create_admin_user()
         transaction_file = open('Transaction.txt', 'w')
         transaction_file.close()
-
-
-def deposit(user_info):
-    pass
-
-
-def withdrawal(user_info):
-    pass
-
 
 # # Return a list of customer names with customer ID (Dictionaries)
 # def search_customer(search_term):
