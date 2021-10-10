@@ -4,6 +4,12 @@
 import os
 import platform
 
+'''
+3 files will be created by the system, which are:
+1. User.txt (Store user's credentials and profile information)
+2. Balance.txt (Store Customer's balance)
+3. Transaction.txt (Store Customer's transaction)
+'''
 
 # GENERAL SNIPPETS
 # Strip whitespace first and check the string is empty or not: (https://stackoverflow.com/a/9573278)
@@ -36,7 +42,7 @@ def clear_console():
 # Get the info of a user in the User.txt data file.
 # Returns a list of strings. (Reference: https://stackoverflow.com/a/39397293)
 def get_user_info(username, password) -> list[str]:
-    if os.path.isfile('Users.txt'):
+    if os.path.isfile('User.txt'):
         user_file = open('User.txt')
         for line in user_file:
             line = line.rstrip()
@@ -102,8 +108,46 @@ def get_user_name(user_type):
     return name
 
 
+# Search user in the User.txt data file by ID
+def find_user_by_id(user_id) -> list[str]:
+    if os.path.isfile('User.txt'):
+        user_file = open('User.txt')
+        for line in user_file:
+            line = line.rstrip()
+            if user_id in line:
+                print('User found.')
+                return [line[0], line[3], line[4]]
+        print('No user info found.')
+        return []
+    else:
+        print('No user info found.')
+        return []
+
+
+# Search user in the User.txt data file by name
+def find_user_by_name(user_name):
+    search_result_users = []
+    if os.path.isfile('User.txt'):
+        user_file = open('User.txt')
+        for line in user_file:
+            line = line.rstrip()
+            if user_name in line:
+                print('User found.')
+                search_result_users.append([line[0], line[3], line[4]])
+            else:
+                continue
+
+        return search_result_users
+    else:
+        print('No users are found.')
+        return []
+
+
 # FUNCTIONS
+# Admin
 # ID \t username \t password \t name \t user_type
+# Customer
+# ID \t username \t password \t name \t balance \t user_type
 # Save user (Admin/Customer) into User.txt file
 def save_user(username, password, name, user_type):
     print('Saving user info...')
@@ -145,7 +189,7 @@ def create_admin_user():
 
 
 # Register a new customer into the system
-def register_customer():
+def create_customer_user():
     print('Register customer selected.')
     customer_username = get_username('customer', None)
     customer_password = get_user_password('customer', None)
@@ -155,12 +199,58 @@ def register_customer():
     save_user(customer_username, customer_password, customer_name, 'Customer')
 
 
+def update_balance(user_info, transaction_type, amount):
+    # Update balance in Balance.txt file, allowing better organized data.
+    pass
+
+
+# ID \t username \t password \t name \t user_type
+def view_customer_profile(user_info):
+    print('View Customer Profile selected.')
+    if user_info[user_info[4]] == 'Admin':
+        search_keyword = input('Please enter the customer\'s ID or name')
+        customer_user_info = find_user_by_id(search_keyword)
+
+        if not customer_user_info:
+            customer_search_result_list = find_user_by_name(search_keyword)
+
+            while True:
+                print('Here\' are the search result: \n')
+                # Loop with index. Reference: https://stackoverflow.com/a/522578
+                for customer, index in customer_search_result_list:
+                    print(index, '. ', customer)
+                selection = int(input('Enter the number to select a customer to continue.'))
+
+                if selection > len(customer_search_result_list) or selection < 1:
+                    print('Invalid selection. Please try again.')
+                    continue
+                else:
+                    display_customer_profile(customer_search_result_list[selection])
+                    input('Press any key to continue...')
+                    break
+        else:
+            print('Not able to find the user. Please try again.')
+    else:
+        display_customer_profile(user_info)
+
+
+def display_customer_profile(user_info):
+    print('Here are the profile details: \n',
+          'Username: ', user_info[1],
+          'Name: ', user_info[3],
+          'Balance: ', user_info[5])
+
+
+def view_customer_transactions(user_info):
+    pass
+
+
 # Display UIs
 def display_welcome():
     print('Welcome to Online Banking System.')
 
 
-def display_admin_menu():
+def display_admin_menu(user_info):
     while True:
         try:
             selection = int(input('Here are a list that you can perform: \n' +
@@ -175,27 +265,30 @@ def display_admin_menu():
             #               https://stackoverflow.com/questions/60208/replacements-for-switch-statement-in-python
             match selection:
                 case 1:
-                    pass
+                    create_customer_user()
                 case 2:
-                    pass
+                    view_customer_profile(user_info)
                 case 3:
-                    pass
+                    view_customer_transactions(user_info)
                 case 4:
-                    pass
+                    print('Logged out.')
+                    break
                 case _:
-                    pass  # Pass. Executes nothing (Reference: https://www.javatpoint.com/python-pass)
+                    print('Invalid input. Please try again.')
         except ValueError:
-            print('Please enter an integer.')
+            print('Please enter a number.')
+            continue
 
 
-def display_customer_menu():
+def display_customer_menu(user_info):
     while True:
         try:
             selection = int(input('Here are a list that you can perform: \n' +
                                   '1. Make Deposit\n' +
                                   '2. Make Withdrawal\n' +
                                   '3. View Transactions\n' +
-                                  '4. Logout\n' +
+                                  '4. View Own Profile\n' +
+                                  '5. Logout\n' +
                                   'Enter the number of the function to proceed.'))
 
             match selection:
@@ -204,20 +297,24 @@ def display_customer_menu():
                 case 2:
                     pass
                 case 3:
-                    pass
+                    view_customer_profile(user_info)
                 case 4:
-                    pass
+                    view_customer_transactions(user_info)
+                case 5:
+                    print('Logged out.')
                 case _:
+                    print('Invalid input. Please try again.')
                     pass
         except ValueError:
-            print('Please enter an integer.')
+            print('Please enter a number.')
+            continue
 
 
 # Initialization of the program to check the user existence
 def init():
     print('Initialize first time running...')
     # Check local data files exist
-    if os.path.isfile('Users.txt') and os.path.isfile('Transaction.txt'):
+    if os.path.isfile('User.txt') and os.path.isfile('Transaction.txt'):
         print('Local data exists.')
         display_welcome()
         login()
@@ -252,11 +349,14 @@ def login():
         login()  # Recurring function (Reference: https://www.programiz.com/python-programming/recursion)
 
 
-# def deposit():
-#
-# def withdrawal():
-#
-#
+def deposit(user_info):
+    pass
+
+
+def withdrawal(user_info):
+    pass
+
+
 # # Return a list of customer names with customer ID (Dictionaries)
 # def search_customer(search_term):
 #
