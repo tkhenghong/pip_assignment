@@ -5,8 +5,8 @@ import os
 
 
 # Strip whitespace first and check the string is empty or not: (https://stackoverflow.com/a/9573278)
-def string_is_blank(myString):
-    return not (myString and myString.strip())
+def string_is_blank(value):
+    return not (value and value.strip())
 
 
 # Read last line of file efficiently (Reference: https://stackoverflow.com/a/54278929)
@@ -115,48 +115,56 @@ def display_welcome():
 
 
 def display_admin_menu():
-    selection = int(input('Here are a list that you can perform: \n' +
-                          '1. Create new customer\n' +
-                          '2. View Customer\'s Profile\n' +
-                          '3. View Customer\'s Transactions\n' +
-                          '4. Logout\n' +
-                          'Enter the number of the function to proceed.'))
+    while True:
+        try:
+            selection = int(input('Here are a list that you can perform: \n' +
+                                  '1. Create new customer\n' +
+                                  '2. View Customer\'s Profile\n' +
+                                  '3. View Customer\'s Transactions\n' +
+                                  '4. Logout\n' +
+                                  'Enter the number of the function to proceed.'))
 
-    # Switch case in Python.
-    # References:   https://towardsdatascience.com/switch-case-statements-are-coming-to-python-d0caf7b2bfd3
-    #               https://stackoverflow.com/questions/60208/replacements-for-switch-statement-in-python
-    match selection:
-        case 1:
-            return None
-        case 2:
-            return None
-        case 3:
-            return None
-        case 4:
-            return None
-        case _:
-            pass  # Pass. Executes nothing (Reference: https://www.javatpoint.com/python-pass)
+            # Switch case in Python.
+            # References:   https://towardsdatascience.com/switch-case-statements-are-coming-to-python-d0caf7b2bfd3
+            #               https://stackoverflow.com/questions/60208/replacements-for-switch-statement-in-python
+            match selection:
+                case 1:
+                    pass
+                case 2:
+                    pass
+                case 3:
+                    pass
+                case 4:
+                    pass
+                case _:
+                    pass  # Pass. Executes nothing (Reference: https://www.javatpoint.com/python-pass)
+        except ValueError:
+            print('Please enter an integer.')
 
 
 def display_customer_menu():
-    selection = int(input('Here are a list that you can perform: \n' +
-                          '1. Make Deposit\n' +
-                          '2. Make Withdrawal\n' +
-                          '3. View Transactions\n' +
-                          '4. Logout\n' +
-                          'Enter the number of the function to proceed.'))
+    while True:
+        try:
+            selection = int(input('Here are a list that you can perform: \n' +
+                                  '1. Make Deposit\n' +
+                                  '2. Make Withdrawal\n' +
+                                  '3. View Transactions\n' +
+                                  '4. Logout\n' +
+                                  'Enter the number of the function to proceed.'))
 
-    match selection:
-        case 1:
-            return None
-        case 2:
-            return None
-        case 3:
-            return None
-        case 4:
-            return None
-        case _:
-            pass
+            match selection:
+                case 1:
+                    pass
+                case 2:
+                    pass
+                case 3:
+                    pass
+                case 4:
+                    pass
+                case _:
+                    pass
+        except ValueError:
+            print('Please enter an integer.')
 
 
 # Initialization of the program to check the user existence
