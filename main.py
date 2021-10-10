@@ -3,6 +3,7 @@
 
 import os
 import platform
+import sys
 
 '''
 3 files will be created by the system, which are:
@@ -296,7 +297,9 @@ def display_welcome():
                     display_about_this_system()
                 case 3:
                     print('Thank you for using this system. See you next time!')
-                    exit(0)
+                    # Exit the program.
+                    # Reference: https://www.geeksforgeeks.org/python-exit-commands-quit-exit-sys-exit-and-os-_exit/
+                    sys.exit("System exited successfully.")
                 case _:
                     print('Invalid input. Please try again.')
         except ValueError:
@@ -397,5 +400,3 @@ def main():
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     main()
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
