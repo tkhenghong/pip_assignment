@@ -152,7 +152,7 @@ def find_user_by_name(user_name):
 # Customer
 # ID \t username \t password \t name \t balance \t user_type
 # Save user (Admin/Customer) into User.txt file
-def save_user(username, password, name, user_type):
+def create_user(username, password, name, user_type):
     print('Saving user info...')
 
     last_user_line = get_last_line_of_file('User.txt')
@@ -188,7 +188,7 @@ def create_admin_user():
     admin_name = get_user_name('admin')
 
     # Create local data files
-    save_user(admin_username, admin_password, admin_name, 'Admin')
+    create_user(admin_username, admin_password, admin_name, 'Admin')
 
 
 # Register a new customer into the system
@@ -199,7 +199,7 @@ def create_customer_user():
     customer_name = get_user_name('customer')
 
     # Create local data files
-    save_user(customer_username, customer_password, customer_name, 'Customer')
+    create_user(customer_username, customer_password, customer_name, 'Customer')
 
 
 def create_transaction(user_id, transaction_type, amount):
@@ -432,6 +432,5 @@ def main():
     init()
 
 
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     main()
