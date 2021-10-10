@@ -2,6 +2,7 @@
 # TP030562
 
 import os
+import platform
 
 
 # Strip whitespace first and check the string is empty or not: (https://stackoverflow.com/a/9573278)
@@ -19,6 +20,16 @@ def get_last_line_of_file(file_name):
             return f.readline().decode()
     else:
         return ''
+
+
+# Clear console in Python to ensure clear outputs between screens.
+# Reference: https://www.delftstack.com/howto/python/python-clear-console/
+def clear_console():
+    match platform.system():
+        case 'Windows':
+            os.system('cls')
+        case _:
+            os.system('clear')
 
 
 def get_username(user_type, default_username):
