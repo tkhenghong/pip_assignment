@@ -24,10 +24,14 @@ def string_is_blank(value):
 def get_last_line_of_file(file_name):
     if os.path.isfile(file_name):
         with open(file_name, 'rb') as f:
-            f.seek(-2, os.SEEK_END)
-            while f.read(1) != b'\n':
-                f.seek(-2, os.SEEK_CUR)
-            return f.readline().decode()
+            try:  # catch OSError in case of a one line file
+                f.seek(-2, os.SEEK_END)
+                while f.read(1) != b'\n':
+                    f.seek(-2, os.SEEK_CUR)
+                return f.readline().decode()
+            except OSError:
+                f.seek(0)
+                return f.readline().decode()
     else:
         return ''
 
@@ -35,11 +39,10 @@ def get_last_line_of_file(file_name):
 # Clear console in Python to ensure clear outputs between screens.
 # Reference: https://www.delftstack.com/howto/python/python-clear-console/
 def clear_console():
-    match platform.system():
-        case 'Windows':
-            os.system('cls')
-        case _:
-            os.system('clear')
+    if platform.system() == 'Windows':
+        os.system('cls')
+    else:
+        os.system('clear')
 
 
 # Get the info of a user in the User.txt data file.
@@ -48,13 +51,13 @@ def get_user_info(username, password) -> list[str]:
     if os.path.isfile('User.txt'):
         user_file = open('User.txt')
         for line in user_file:
-            line = line.rstrip()
+            line = line.rstrip().split('\t')
             if username in line and password not in line:
                 print('Incorrect Username/password. Please try again.')
             elif username in line and password in line:
                 # ID \t username \t password \t name \t user_type
                 # Returning ID, username and user type.
-                return [line[0], line[3], line[4]]
+                return line
             else:
                 print('User not found. Please try again.')
         print('No user info found.')
@@ -66,11 +69,15 @@ def get_user_info(username, password) -> list[str]:
 
 def get_username(user_type, default_username):
     while True:
-        customer_username = input('Please enter the' + user_type + '\'s username. ' + (
+        customer_username = input('Please enter the ' + user_type + '\'s username. ' + (
             '(Default ' + user_type + '\'s' + ' username: ' + default_username + ')' if default_username else ''))
         if string_is_blank(customer_username):
-            print('Username is empty.')
-            continue
+            if default_username:
+                customer_username = default_username
+                break
+            else:
+                print(user_type + '\'s username is empty. Please try again.')
+                continue
         else:
             break
     return customer_username
@@ -82,12 +89,12 @@ def get_user_password(user_type, default_password):
             'Please enter the ' + user_type + '\'s password. ' + (
                 '(Default ' + user_type + '\'s' + ' password: ' + default_password + ')' if default_password else ''))
         if string_is_blank(password):
-            if not default_password:
-                print(user_type + '\'s password is empty. Please try again')
-                continue
-            else:
+            if default_password:
                 password = default_password
                 break
+            else:
+                print(user_type + '\'s password is empty. Please try again')
+                continue
         else:
             confirm_password = input('Confirm the ' + user_type + '\'s password: ')
             if string_is_blank(confirm_password):
@@ -160,15 +167,11 @@ def create_user(username, password, name, user_type):
     # Split the last line user info into an array of texts
     last_user_info = last_user_line.split('\t')
 
-    print('last_user_line: ' + last_user_line)
-    print('last_user_info: ', last_user_info)
-
     # Get the 1st information of the last_user_info array, then substring the text to take the 2nd character till end.
     # Convert the result to string and addition by 1 .
     # Reference: https://www.freecodecamp.org/news/how-to-substring-a-string-in-python/
     existing_user_id = last_user_info[0][1:-1] if string_is_blank(last_user_info[0]) else '0'
     new_user_id = 1 if string_is_blank(last_user_info[0]) else int(existing_user_id) + 1
-
     user_file = open('User.txt', 'a') if os.path.isfile('User.txt') else open('User.txt', 'w')
 
     user_file.write('U' + str(new_user_id) + '\t' + username + '\t' + password + '\t' + name + '\t' + user_type + '\n')
@@ -261,8 +264,12 @@ def login():
     # Create local data files
     user_info = get_user_info(username, password)
 
-    if not user_info:
-        print('Welcome, ', user_info[0])
+    if user_info:
+        print('Welcome, ', user_info[3], ' ', user_info[0])
+        if user_info[4] == 'Admin':
+            display_admin_menu(user_info)
+        else:  # Customer
+            display_customer_menu(user_info)
     else:
         login()  # Recurring function (Reference: https://www.programiz.com/python-programming/recursion)
 
@@ -331,25 +338,24 @@ def display_welcome():
         try:
             selection = int(input('Here are a list that you can perform: \n' +
                                   '1. Login\n' +
-                                  '2. About this system' +
+                                  '2. About this system\n' +
                                   '3. Exit\n' +
-                                  'Enter the number of the functions above to proceed.'))
+                                  'Enter the number of the functions above to proceed.\n'))
 
             # Switch case in Python.
             # References:   https://towardsdatascience.com/switch-case-statements-are-coming-to-python-d0caf7b2bfd3
             #               https://stackoverflow.com/questions/60208/replacements-for-switch-statement-in-python
-            match selection:
-                case 1:
-                    login()
-                case 2:
-                    display_about_this_system()
-                case 3:
-                    print('Thank you for using this system. See you next time!')
-                    # Exit the program.
-                    # Reference: https://www.geeksforgeeks.org/python-exit-commands-quit-exit-sys-exit-and-os-_exit/
-                    sys.exit("System exited successfully.")
-                case _:
-                    print('Invalid input. Please try again.')
+            if selection == 1:
+                login()
+            elif selection == 2:
+                display_about_this_system()
+            elif selection == 3:
+                print('Thank you for using this system. See you next time!')
+                # Exit the program.
+                # Reference: https://www.geeksforgeeks.org/python-exit-commands-quit-exit-sys-exit-and-os-_exit/
+                sys.exit("System exited successfully.")
+            else:
+                print('Invalid input. Please try again.')
         except ValueError:
             print('Please enter a number.')
             continue
@@ -363,23 +369,22 @@ def display_admin_menu(user_info):
                                   '2. View Customer\'s Profile\n' +
                                   '3. View Customer\'s Transactions\n' +
                                   '4. Logout\n' +
-                                  'Enter the number of the function to proceed.'))
+                                  'Enter the number of the function to proceed.\n'))
 
             # Switch case in Python.
             # References:   https://towardsdatascience.com/switch-case-statements-are-coming-to-python-d0caf7b2bfd3
             #               https://stackoverflow.com/questions/60208/replacements-for-switch-statement-in-python
-            match selection:
-                case 1:
-                    create_customer_user()
-                case 2:
-                    view_customer_profile(user_info)
-                case 3:
-                    view_customer_transactions(user_info)
-                case 4:
-                    print('Logged out.')
-                    break
-                case _:
-                    print('Invalid input. Please try again.')
+            if selection == 1:
+                create_customer_user()
+            elif selection == 2:
+                view_customer_profile(user_info)
+            elif selection == 3:
+                view_customer_transactions(user_info)
+            elif selection == 4:
+                print('Logged out.')
+                break
+            else:
+                print('Invalid input. Please try again.')
         except ValueError:
             print('Please enter a number.')
             continue
@@ -394,22 +399,22 @@ def display_customer_menu(user_info):
                                   '3. View Transactions\n' +
                                   '4. View Own Profile\n' +
                                   '5. Logout\n' +
-                                  'Enter the number of the function to proceed.'))
+                                  'Enter the number of the function to proceed.\n'))
 
-            match selection:
-                case 1:
-                    deposit(user_info)
-                case 2:
-                    withdrawal(user_info)
-                case 3:
-                    view_customer_profile(user_info)
-                case 4:
-                    view_customer_transactions(user_info)
-                case 5:
-                    print('Logged out.')
-                case _:
-                    print('Invalid input. Please try again.')
-                    pass
+            if selection == 1:
+                deposit(user_info)
+            elif selection == 2:
+                withdrawal(user_info)
+            elif selection == 3:
+                view_customer_profile(user_info)
+            elif selection == 4:
+                view_customer_transactions(user_info)
+            elif selection == 5:
+                print('Logged out.')
+                break
+            else:
+                print('Invalid input. Please try again.')
+
         except ValueError:
             print('Please enter a number.')
             continue
@@ -419,13 +424,13 @@ def display_customer_menu(user_info):
 def init():
     print('Initialize first time running...')
     # Check local data files exist
-    if os.path.isfile('User.txt') and os.path.isfile('Transaction.txt'):
+    if os.path.isfile('User.txt'):
         print('Local data exists.')
-        display_welcome()
     else:
         create_admin_user()
-        transaction_file = open('Transaction.txt', 'w')
-        transaction_file.close()
+        # transaction_file = open('Transaction.txt', 'w')
+        # transaction_file.close()
+    display_welcome()
 
 
 def main():
