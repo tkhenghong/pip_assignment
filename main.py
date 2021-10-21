@@ -145,6 +145,7 @@ def find_transactions(user_id) -> list[list[str]]:
         return []
     return transactions
 
+
 # FUNCTIONS
 # Admin
 # ID \t username \t password \t name \t user_type
@@ -216,7 +217,8 @@ def create_transaction(user_id, transaction_type, amount):
     existing_transaction_id = 0 if string_is_blank(last_transaction[0]) else int(last_transaction[0].split('T', 1)[1])
     existing_transaction_id += 1
 
-    transaction_file.write('{}\t{}\t{}\t{}\n'.format('T' + str(existing_transaction_id), user_id, transaction_type, amount))
+    transaction_file.write(
+        '{}\t{}\t{}\t{}\n'.format('T' + str(existing_transaction_id), user_id, transaction_type, amount))
     transaction_file.close()
 
 
