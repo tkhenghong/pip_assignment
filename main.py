@@ -117,38 +117,19 @@ def get_user_name(user_type):
 
 
 # Search user in the User.txt data file by ID
-def find_user_by_id(user_id) -> list[str]:
+def find_user(user_id) -> list[list[str]]:
+    result_users = []
     if os.path.isfile('User.txt'):
         user_file = open('User.txt')
         for line in user_file:
-            line = line.rstrip()
+            line = line.rstrip().split('\t')
+            print('line: ', line)
             if user_id in line:
-                print('User found.')
-                return [line[0], line[3], line[4]]
-        print('No user info found.')
-        return []
+                result_users.append(line)
+
     else:
-        print('No user info found.')
         return []
-
-
-# Search user in the User.txt data file by name
-def find_user_by_name(user_name):
-    search_result_users = []
-    if os.path.isfile('User.txt'):
-        user_file = open('User.txt')
-        for line in user_file:
-            line = line.rstrip()
-            if user_name in line:
-                print('User found.')
-                search_result_users.append([line[0], line[3], line[4]])
-            else:
-                continue
-
-        return search_result_users
-    else:
-        print('No users are found.')
-        return []
+    return result_users
 
 
 # FUNCTIONS
@@ -158,23 +139,29 @@ def find_user_by_name(user_name):
 # ID \t username \t password \t name \t balance \t user_type
 # Save user (Admin/Customer) into User.txt file
 def create_user(username, password, name, user_type):
-    print('Saving user info...')
+    try:
+        print('Saving user info...')
 
-    last_user_line = get_last_line_of_file('User.txt')
+        last_user_line = get_last_line_of_file('User.txt')
 
-    # Split the last line user info into an array of texts
-    last_user_info = last_user_line.split('\t')
+        # Split the last line user info into an array of texts
+        last_user_info = last_user_line.rstrip().split('\t')
 
-    # Get the 1st information of the last_user_info array, then substring the text to take the 2nd character till end.
-    # Convert the result to string and addition by 1 .
-    # Reference: https://www.freecodecamp.org/news/how-to-substring-a-string-in-python/
-    existing_user_id = last_user_info[0][1:-1] if string_is_blank(last_user_info[0]) else '0'
-    new_user_id = 1 if string_is_blank(last_user_info[0]) else int(existing_user_id) + 1
-    user_file = open('User.txt', 'a') if os.path.isfile('User.txt') else open('User.txt', 'w')
+        # Get the 1st information of the last_user_info array,
+        # then substring the text to take the 2nd character till end.
+        # Convert the result to string and addition by 1 .
+        # Reference: https://stackoverflow.com/a/12572391
+        existing_user_id = '0' if string_is_blank(last_user_info[0]) else last_user_info[0].split('U', 1)[1]
 
-    user_file.write('U' + str(new_user_id) + '\t' + username + '\t' + password + '\t' + name + '\t' + user_type + '\n')
-    print('User saved successfully.')
-    user_file.close()
+        new_user_id = 1 if string_is_blank(last_user_info[0]) else int(existing_user_id) + 1
+        user_file = open('User.txt', 'a') if os.path.isfile('User.txt') else open('User.txt', 'w')
+
+        user_file.write(
+            'U' + str(new_user_id) + '\t' + username + '\t' + password + '\t' + name + '\t' + user_type + '\n')
+        print('User saved successfully.')
+        user_file.close()
+    except Exception as e:
+        print('Exception caught. e: ', e)
 
 
 # Create admin user in the system
@@ -321,27 +308,27 @@ def view_customer_profile(user_info):
     print('View Customer Profile selected.')
     if user_info[4] == 'Admin':
         search_keyword = input('Please enter the customer\'s ID or name')
-        customer_user_info = find_user_by_id(search_keyword)
+        customer_search_result_list = find_user(search_keyword)
 
-        if not customer_user_info:
-            customer_search_result_list = find_user_by_name(search_keyword)
-
+        if customer_search_result_list:
             while True:
-                print('Here\' are the search result: \n')
+                print('Here are the search result: \n')
                 # Loop with index. Reference: https://stackoverflow.com/a/522578
-                for customer, index in customer_search_result_list:
-                    print(index, '. ', customer)
+                for index in range(len(customer_search_result_list)):
+                    print(index + 1, '. ', customer_search_result_list[index][0], ' ',
+                          customer_search_result_list[index][3])
                 selection = int(input('Enter the number to select a customer to continue.'))
 
                 if selection > len(customer_search_result_list) or selection < 1:
                     print('Invalid selection. Please try again.')
                     continue
                 else:
-                    display_customer_profile(customer_search_result_list[selection])
-                    input('Press any key to continue...')
+                    display_customer_profile(customer_search_result_list[selection - 1])
+                    input('Press ENTER to continue...')
                     break
         else:
-            print('Not able to find the user. Please try again.')
+            print('No users are found.')
+            input('Press ENTER to continue...')
     else:
         display_customer_profile(user_info)
 
