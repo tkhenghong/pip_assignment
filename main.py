@@ -54,11 +54,11 @@ def get_user_info(username, password) -> list[str]:
             line = line.rstrip().split('\t')
             if username in line and password not in line:
                 print('Incorrect Username/password. Please try again.')
+                return []
             elif username in line and password in line:
                 # ID \t username \t password \t name \t user_type
                 # Returning ID, username and user type.
                 return line
-        print('Incorrect Username/password. Please try again.')
         return []
     else:
         print('User not found.')
@@ -123,14 +123,27 @@ def find_user(user_id) -> list[list[str]]:
         user_file = open('User.txt')
         for line in user_file:
             line = line.rstrip().split('\t')
-            print('line: ', line)
             if user_id in line:
                 result_users.append(line)
-
+        user_file.close()
     else:
         return []
     return result_users
 
+
+# Find transactions of the User in Transaction.txt
+def find_transactions(user_id) -> list[list[str]]:
+    transactions = []
+    if os.path.isfile('Transaction.txt'):
+        transaction_file = open('Transaction.txt')
+        for line in transaction_file:
+            line = line.rstrip().split('\t')
+            if user_id in line:
+                transactions.append(line)
+        transaction_file.close()
+    else:
+        return []
+    return transactions
 
 # FUNCTIONS
 # Admin
@@ -147,19 +160,22 @@ def create_user(username, password, name, user_type):
         # Split the last line user info into an array of texts
         last_user_info = last_user_line.rstrip().split('\t')
 
-        # Get the 1st information of the last_user_info array,
-        # then substring the text to take the 2nd character till end.
-        # Convert the result to string and addition by 1 .
-        # Reference: https://stackoverflow.com/a/12572391
-        existing_user_id = '0' if string_is_blank(last_user_info[0]) else last_user_info[0].split('U', 1)[1]
+        if username == last_user_info[1]:
+            print('User is already exist.')
+        else:
+            # Get the 1st information of the last_user_info array,
+            # then substring the text to take the 2nd character till end.
+            # Convert the result to string and addition by 1 .
+            # Reference: https://stackoverflow.com/a/12572391
+            existing_user_id = '0' if string_is_blank(last_user_info[0]) else last_user_info[0].split('U', 1)[1]
 
-        new_user_id = 1 if string_is_blank(last_user_info[0]) else int(existing_user_id) + 1
-        user_file = open('User.txt', 'a') if os.path.isfile('User.txt') else open('User.txt', 'w')
+            new_user_id = 1 if string_is_blank(last_user_info[0]) else int(existing_user_id) + 1
+            user_file = open('User.txt', 'a') if os.path.isfile('User.txt') else open('User.txt', 'w')
 
-        user_file.write(
-            'U' + str(new_user_id) + '\t' + username + '\t' + password + '\t' + name + '\t' + user_type + '\n')
-        print('User saved successfully.')
-        user_file.close()
+            user_file.write(
+                'U' + str(new_user_id) + '\t' + username + '\t' + password + '\t' + name + '\t' + user_type + '\n')
+            print('User saved successfully.')
+            user_file.close()
     except Exception as e:
         print('Exception caught. e: ', e)
 
@@ -194,7 +210,13 @@ def create_transaction(user_id, transaction_type, amount):
     transaction_file = open('Transaction.txt', 'a') if os.path.isfile('Transaction.txt') else \
         open('Transaction.txt', 'w')
 
-    transaction_file.write('{}\t{}\t{}\n'.format(user_id, transaction_type, amount))
+    last_transaction_line = get_last_line_of_file('Transaction.txt')
+
+    last_transaction = last_transaction_line.rstrip().split('\t')
+    existing_transaction_id = 0 if string_is_blank(last_transaction[0]) else int(last_transaction[0].split('T', 1)[1])
+    existing_transaction_id += 1
+
+    transaction_file.write('{}\t{}\t{}\t{}\n'.format('T' + str(existing_transaction_id), user_id, transaction_type, amount))
     transaction_file.close()
 
 
@@ -321,7 +343,12 @@ def view_customer_profile(user_info):
 
                 if selection > len(customer_search_result_list) or selection < 1:
                     print('Invalid selection. Please try again.')
-                    continue
+
+                    selection = input('Press ENTER to continue. Press q to go back.')
+                    if selection == 'q':
+                        break
+                    else:
+                        continue
                 else:
                     display_customer_profile(customer_search_result_list[selection - 1])
                     input('Press ENTER to continue...')
@@ -337,10 +364,24 @@ def display_customer_profile(user_info):
     print('Here are the profile details: \n',
           'Username: ', user_info[1], '\n',
           'Name: ', user_info[3], '\n',
-          'User Type: ', user_info[4]), '\n',
+          'User Type: ', user_info[4], '\n')
+    input('Press Enter to continue...')
 
 
 def view_customer_transactions(user_info):
+    print('View Customer Transactions selected.')
+    if user_info[4] == 'Admin':
+        pass
+    else:
+        transactions = find_transactions(user_info[0])
+        if transactions:
+            print('Here are the customer\'s transactions: \n',
+                  'ID\tOperation\tAmount\n')
+            for index in range(len(transactions)):
+                print(transactions[index][0], '\t', transactions[index][2], '\t', transactions[index][3])
+        else:
+            print('No transactions found.')
+        input('Press Enter to continue...')
     pass
 
 
@@ -413,7 +454,7 @@ def display_customer_menu(user_info):
             selection = int(input('Here are a list that you can perform: \n' +
                                   '1. Make Deposit\n' +
                                   '2. Make Withdrawal\n' +
-                                  '3. View Transactions\n' +
+                                  '3. View Own Transactions\n' +
                                   '4. View Own Profile\n' +
                                   '5. Logout\n' +
                                   'Enter the number of the function to proceed.\n'))
