@@ -1,0 +1,4 @@
+T1	U3	Deposit	10
+T2	U3	Withdrawal	5
+T3	U2	Deposit	20
+T4	U2	Withdrawal	3

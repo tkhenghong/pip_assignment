@@ -1,7 +1,6 @@
 # TEOH KHENG HONG
 # TP030562
 import decimal
-import fileinput
 import os
 import platform
 import sys
@@ -61,7 +60,7 @@ def get_user_info(username, password) -> list[str]:
                 return line
         return []
     else:
-        print('User not found.')
+        print('User is not registered.')
         return []
 
 
@@ -117,22 +116,45 @@ def get_user_name(user_type):
 
 
 # Search user in the User.txt data file by ID
-def find_user(user_id) -> list[list[str]]:
+def find_user() -> list[str]:
+    search_keyword = input('Please enter the customer\'s ID or name')
     result_users = []
+    selected_user = []
     if os.path.isfile('User.txt'):
         user_file = open('User.txt')
         for line in user_file:
             line = line.rstrip().split('\t')
-            if user_id in line:
+            if search_keyword in line:
                 result_users.append(line)
         user_file.close()
     else:
-        return []
-    return result_users
+        print('No users found.')
+
+    if result_users:
+        while True:
+            print('Here are the search results: \n')
+            # Loop with index. Reference: https://stackoverflow.com/a/522578
+            for index in range(len(result_users)):
+                print(index + 1, '. ', result_users[index][0], ' ',
+                      result_users[index][3])
+            selection = int(input('Enter the number to select a user to continue.'))
+
+            if selection > len(result_users) or selection < 1:
+                print('Invalid selection. Please try again.')
+
+                selection = input('Press ENTER to continue. Press q to go back.')
+                if selection == 'q':
+                    break
+                else:
+                    continue
+            else:
+                selected_user = result_users[selection - 1]
+                break
+    return selected_user
 
 
-# Find transactions of the User in Transaction.txt
-def find_transactions(user_id) -> list[list[str]]:
+# Find and show the transactions of the User in Transaction.txt
+def find_and_display_transactions(user_id):
     transactions = []
     if os.path.isfile('Transaction.txt'):
         transaction_file = open('Transaction.txt')
@@ -141,44 +163,41 @@ def find_transactions(user_id) -> list[list[str]]:
             if user_id in line:
                 transactions.append(line)
         transaction_file.close()
+
+    if transactions:
+        print('Here are the customer\'s transactions: \n',
+              'ID\tOperation\t\tAmount(MYR)')
+        for index in range(len(transactions)):
+            print(transactions[index][0], '\t', transactions[index][2], '\t\t', transactions[index][3])
     else:
-        return []
-    return transactions
+        print('No transactions found.')
 
 
-# FUNCTIONS
-# Admin
-# ID \t username \t password \t name \t user_type
-# Customer
-# ID \t username \t password \t name \t balance \t user_type
 # Save user (Admin/Customer) into User.txt file
 def create_user(username, password, name, user_type):
-    try:
-        print('Saving user info...')
+    print('Saving user info...')
 
-        last_user_line = get_last_line_of_file('User.txt')
+    last_user_line = get_last_line_of_file('User.txt')
 
-        # Split the last line user info into an array of texts
-        last_user_info = last_user_line.rstrip().split('\t')
+    # Split the last line user info into an array of texts
+    last_user_info = last_user_line.rstrip().split('\t')
 
-        if username == last_user_info[1]:
-            print('User is already exist.')
-        else:
-            # Get the 1st information of the last_user_info array,
-            # then substring the text to take the 2nd character till end.
-            # Convert the result to string and addition by 1 .
-            # Reference: https://stackoverflow.com/a/12572391
-            existing_user_id = '0' if string_is_blank(last_user_info[0]) else last_user_info[0].split('U', 1)[1]
+    if username == last_user_info[1]:
+        print('User is already exist.')
+    else:
+        # Get the 1st information of the last_user_info array,
+        # then substring the text to take the 2nd character till end.
+        # Convert the result to string and addition by 1 .
+        # Reference: https://stackoverflow.com/a/12572391
+        existing_user_id = '0' if string_is_blank(last_user_info[0]) else last_user_info[0].split('U', 1)[1]
 
-            new_user_id = 1 if string_is_blank(last_user_info[0]) else int(existing_user_id) + 1
-            user_file = open('User.txt', 'a') if os.path.isfile('User.txt') else open('User.txt', 'w')
+        new_user_id = 1 if string_is_blank(last_user_info[0]) else int(existing_user_id) + 1
+        user_file = open('User.txt', 'a') if os.path.isfile('User.txt') else open('User.txt', 'w')
 
-            user_file.write(
-                'U' + str(new_user_id) + '\t' + username + '\t' + password + '\t' + name + '\t' + user_type + '\n')
-            print('User saved successfully.')
-            user_file.close()
-    except Exception as e:
-        print('Exception caught. e: ', e)
+        user_file.write(
+            'U' + str(new_user_id) + '\t' + username + '\t' + password + '\t' + name + '\t' + user_type + '\n')
+        print('User saved successfully.')
+        user_file.close()
 
 
 # Create admin user in the system
@@ -205,8 +224,11 @@ def create_customer_user():
 
     # Create local data files
     create_user(customer_username, customer_password, customer_name, 'Customer')
+    input('Press ENTER to continue.')
+    clear_console()
 
 
+# Create Deposit/Withdrawal Transactions
 def create_transaction(user_id, transaction_type, amount):
     transaction_file = open('Transaction.txt', 'a') if os.path.isfile('Transaction.txt') else \
         open('Transaction.txt', 'w')
@@ -224,13 +246,12 @@ def create_transaction(user_id, transaction_type, amount):
 
 # Update balance of a user in Balance.txt file.
 # Returns True or False to indicate success.
+# Logic Reference: https://stackoverflow.com/a/4719562
 def update_balance(user_id, transaction_type, amount):
     update_success = False
     withdrawal_eligible = True
 
     print('Saving...')
-
-    balance_file = open('Balance.txt', 'a') if os.path.isfile('Balance.txt') else open('Balance.txt', 'w')
 
     # If File is blank, by checking file size.
     # https://stackoverflow.com/a/2507871
@@ -238,36 +259,47 @@ def update_balance(user_id, transaction_type, amount):
 
     if empty_file:
         if transaction_type == 'Deposit':
+            balance_file = open('Balance.txt', 'w')
             balance_file.write(user_id + '\t' + str(amount) + '\n')
             update_success = True
+            balance_file.close()
         else:
             withdrawal_eligible = False
     else:
-        for line in fileinput.input('Balance.txt', inplace=True):
-            user_balance = line.rstrip().split('\t')
-            if user_id in user_balance:
+        # Read existing user balance
+        balance_file = open('Balance.txt')
+
+        balance_file_data = balance_file.readlines()
+        user_balance = []
+        user_balance_line_index = -1
+
+        for index in range(len(balance_file_data)):
+            stripped_line = balance_file_data[index].rstrip()
+            if user_id in stripped_line:
+                user_balance = stripped_line.split('\t')
                 # Use Decimal for precise currency
                 # Reference: https://docs.python.org/3/library/decimal.html
                 balance = decimal.Decimal(user_balance[1])
                 if transaction_type == 'Deposit':
                     balance += amount
-                    # Replace a line in file
-                    # Reference: https://stackoverflow.com/a/290494
-                    print('{}\t{}'.format(user_id, balance), end='')
-                    update_success = True
-                    fileinput.close()
-                    break
+                    user_balance[1] = str(balance)
                 else:
                     if balance < amount:
                         withdrawal_eligible = False
-                        fileinput.close()
-                        break
                     else:
                         balance -= amount
-                        print('{}\t{}'.format(user_id, balance), end='')
-                        update_success = True
-                        fileinput.close()
-                        break
+                        user_balance[1] = str(balance)
+                break
+        if user_balance:
+            if withdrawal_eligible:
+                balance_file_data[user_balance_line_index] = '\t'.join(user_balance) + '\n'
+                with open('Balance.txt', 'w') as file:
+                    file.writelines(balance_file_data)
+                update_success = True
+        else:
+            balance_file = open('Balance.txt', 'a')
+            balance_file.write(user_id + '\t' + str(amount) + '\n')
+            update_success = True
 
     if not withdrawal_eligible:
         print('You don\'t have that amount of money to withdraw.')
@@ -301,6 +333,7 @@ def login():
             display_customer_menu(user_info)
     else:
         login()  # Recurring function (Reference: https://www.programiz.com/python-programming/recursion)
+    clear_console()
 
 
 def deposit(user_info):
@@ -308,11 +341,16 @@ def deposit(user_info):
         try:
             amount = decimal.Decimal(input('Please enter the amount that you want to deposit: '))
             update_balance_success = update_balance(user_info[0], 'Deposit', amount)
-            create_transaction(user_info[0], 'Deposit', amount)
+
+            if update_balance_success:
+                create_transaction(user_info[0], 'Deposit', amount)
+
             print('Deposit ', 'successful.' if update_balance_success else 'failed.')
             break
         except ValueError:
             print('Please enter a number.')
+    input('Press ENTER to continue.')
+    clear_console()
 
 
 def withdrawal(user_info):
@@ -320,46 +358,15 @@ def withdrawal(user_info):
         try:
             amount = decimal.Decimal(input('Please enter the amount that you want to withdraw: '))
             update_balance_success = update_balance(user_info[0], 'Withdrawal', amount)
-            create_transaction(user_info[0], 'Withdrawal', amount)
+
+            if update_balance_success:
+                create_transaction(user_info[0], 'Withdrawal', amount)
+
             print('Withdrawal', 'successful.' if update_balance_success else 'failed.')
+            input('Press ENTER to continue.')
             break
         except ValueError:
             print('Please enter a number.')
-
-
-# ID \t username \t password \t name \t user_type
-def view_customer_profile(user_info):
-    print('View Customer Profile selected.')
-    if user_info[4] == 'Admin':
-        search_keyword = input('Please enter the customer\'s ID or name')
-        customer_search_result_list = find_user(search_keyword)
-
-        if customer_search_result_list:
-            while True:
-                print('Here are the search result: \n')
-                # Loop with index. Reference: https://stackoverflow.com/a/522578
-                for index in range(len(customer_search_result_list)):
-                    print(index + 1, '. ', customer_search_result_list[index][0], ' ',
-                          customer_search_result_list[index][3])
-                selection = int(input('Enter the number to select a customer to continue.'))
-
-                if selection > len(customer_search_result_list) or selection < 1:
-                    print('Invalid selection. Please try again.')
-
-                    selection = input('Press ENTER to continue. Press q to go back.')
-                    if selection == 'q':
-                        break
-                    else:
-                        continue
-                else:
-                    display_customer_profile(customer_search_result_list[selection - 1])
-                    input('Press ENTER to continue...')
-                    break
-        else:
-            print('No users are found.')
-            input('Press ENTER to continue...')
-    else:
-        display_customer_profile(user_info)
 
 
 def display_customer_profile(user_info):
@@ -367,32 +374,55 @@ def display_customer_profile(user_info):
           'Username: ', user_info[1], '\n',
           'Name: ', user_info[3], '\n',
           'User Type: ', user_info[4], '\n')
-    input('Press Enter to continue...')
+
+
+def view_customer_profile(user_info):
+    print('View Customer Profile selected.')
+    if user_info[4] == 'Admin':
+        selected_customer = find_user()
+        if selected_customer:
+            display_customer_profile(selected_customer)
+        else:
+            print('No profile displayed.')
+    else:
+        display_customer_profile(user_info)
+    input('Press ENTER to continue...')
+    clear_console()
 
 
 def view_customer_transactions(user_info):
     print('View Customer Transactions selected.')
     if user_info[4] == 'Admin':
-        pass
-    else:
-        transactions = find_transactions(user_info[0])
-        if transactions:
-            print('Here are the customer\'s transactions: \n',
-                  'ID\tOperation\tAmount\n')
-            for index in range(len(transactions)):
-                print(transactions[index][0], '\t', transactions[index][2], '\t', transactions[index][3])
+        selected_customer = find_user()
+
+        if selected_customer:
+            find_and_display_transactions(selected_customer[0])
         else:
-            print('No transactions found.')
-        input('Press Enter to continue...')
-    pass
+            print('No transactions displayed.')
+    else:
+        find_and_display_transactions(user_info[0])
+    input('Press ENTER to continue...')
+    clear_console()
 
 
 def display_about_this_system():
+    print('Online Banking System\n', 'Made by Teoh Kheng Hong\n', 'TP030562\n', 'Python In Programming (PIP)')
+    input('Press ENTER to continue...')
     pass
 
 
 # Display welcome menu.
 def display_welcome():
+    print(' /$$      /$$ /$$$$$$$$ /$$        /$$$$$$   /$$$$$$  /$$      /$$ /$$$$$$$$\n'
+          '| $$  /$ | $$| $$_____/| $$       /$$__  $$ /$$__  $$| $$$    /$$$| $$_____/\n',
+          '| $$ /$$$| $$| $$      | $$      | $$  \__/| $$  \ $$| $$$$  /$$$$| $$      \n',
+          '| $$/$$ $$ $$| $$$$$   | $$      | $$      | $$  | $$| $$ $$/$$ $$| $$$$$   \n',
+          '| $$$$_  $$$$| $$__/   | $$      | $$      | $$  | $$| $$  $$$| $$| $$__/   \n',
+          '| $$$/ \  $$$| $$      | $$      | $$    $$| $$  | $$| $$\  $ | $$| $$      \n',
+          '| $$/   \  $$| $$$$$$$$| $$$$$$$$|  $$$$$$/|  $$$$$$/| $$ \/  | $$| $$$$$$$$\n',
+          '|__/     \__/|________/|________/ \______/  \______/ |__/     |__/|________/\n',
+
+          )
     print('Welcome to Online Banking System.')
     while True:
         try:
@@ -460,7 +490,6 @@ def display_customer_menu(user_info):
                                   '4. View Own Profile\n' +
                                   '5. Logout\n' +
                                   'Enter the number of the function to proceed.\n'))
-
             if selection == 1:
                 deposit(user_info)
             elif selection == 2:
@@ -488,8 +517,6 @@ def init():
         print('Local data exists.')
     else:
         create_admin_user()
-        # transaction_file = open('Transaction.txt', 'w')
-        # transaction_file.close()
     display_welcome()
 
 
