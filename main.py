@@ -58,12 +58,10 @@ def get_user_info(username, password) -> list[str]:
                 # ID \t username \t password \t name \t user_type
                 # Returning ID, username and user type.
                 return line
-            else:
-                print('User not found. Please try again.')
-        print('No user info found.')
+        print('Incorrect Username/password. Please try again.')
         return []
     else:
-        print('No user info found.')
+        print('User not found.')
         return []
 
 
@@ -206,19 +204,37 @@ def create_customer_user():
 
 
 def create_transaction(user_id, transaction_type, amount):
-    pass
+    transaction_file = open('Transaction.txt', 'a') if os.path.isfile('Transaction.txt') else \
+        open('Transaction.txt', 'w')
+
+    transaction_file.write('{}\t{}\t{}\n'.format(user_id, transaction_type, amount))
+    transaction_file.close()
 
 
 # Update balance of a user in Balance.txt file.
 # Returns True or False to indicate success.
 def update_balance(user_id, transaction_type, amount):
     update_success = False
-    # Update balance in Balance.txt file, allowing better organized data.
-    if os.path.isfile('Balance.txt'):
+    withdrawal_eligible = True
+
+    print('Saving...')
+
+    balance_file = open('Balance.txt', 'a') if os.path.isfile('Balance.txt') else open('Balance.txt', 'w')
+
+    # If File is blank, by checking file size.
+    # https://stackoverflow.com/a/2507871
+    empty_file = os.stat('Balance.txt').st_size == 0
+
+    if empty_file:
+        if transaction_type == 'Deposit':
+            balance_file.write(user_id + '\t' + str(amount) + '\n')
+            update_success = True
+        else:
+            withdrawal_eligible = False
+    else:
         for line in fileinput.input('Balance.txt', inplace=True):
-            stripped_line = line.rstrip()
-            if user_id in stripped_line:
-                user_balance = stripped_line.split('\t')
+            user_balance = line.rstrip().split('\t')
+            if user_id in user_balance:
                 # Use Decimal for precise currency
                 # Reference: https://docs.python.org/3/library/decimal.html
                 balance = decimal.Decimal(user_balance[1])
@@ -228,20 +244,22 @@ def update_balance(user_id, transaction_type, amount):
                     # Reference: https://stackoverflow.com/a/290494
                     print('{}\t{}'.format(user_id, balance), end='')
                     update_success = True
+                    fileinput.close()
+                    break
                 else:
                     if balance < amount:
-                        print('Unable to perform withdrawal with that amount.')
+                        withdrawal_eligible = False
+                        fileinput.close()
+                        break
                     else:
                         balance -= amount
                         print('{}\t{}'.format(user_id, balance), end='')
                         update_success = True
-                fileinput.close()
+                        fileinput.close()
+                        break
 
-    else:
-        user_file = open('Balance.txt', 'w')
-        if transaction_type == 'Deposit':
-            user_file.write(user_id + '\t' + '')
-            update_success = True
+    if not withdrawal_eligible:
+        print('You don\'t have that amount of money to withdraw.')
     return update_success
 
 
@@ -275,21 +293,33 @@ def login():
 
 
 def deposit(user_info):
-    # TODO
-    update_balance_success = update_balance(user_info[0], 'Deposit', 0)
-    pass
+    while True:
+        try:
+            amount = decimal.Decimal(input('Please enter the amount that you want to deposit: '))
+            update_balance_success = update_balance(user_info[0], 'Deposit', amount)
+            create_transaction(user_info[0], 'Deposit', amount)
+            print('Deposit ', 'successful.' if update_balance_success else 'failed.')
+            break
+        except ValueError:
+            print('Please enter a number.')
 
 
 def withdrawal(user_info):
-    # TODO
-    update_balance_success = update_balance(user_info[0], 'Withdrawal', 0)
-    pass
+    while True:
+        try:
+            amount = decimal.Decimal(input('Please enter the amount that you want to withdraw: '))
+            update_balance_success = update_balance(user_info[0], 'Withdrawal', amount)
+            create_transaction(user_info[0], 'Withdrawal', amount)
+            print('Withdrawal', 'successful.' if update_balance_success else 'failed.')
+            break
+        except ValueError:
+            print('Please enter a number.')
 
 
 # ID \t username \t password \t name \t user_type
 def view_customer_profile(user_info):
     print('View Customer Profile selected.')
-    if user_info[user_info[4]] == 'Admin':
+    if user_info[4] == 'Admin':
         search_keyword = input('Please enter the customer\'s ID or name')
         customer_user_info = find_user_by_id(search_keyword)
 
@@ -318,9 +348,9 @@ def view_customer_profile(user_info):
 
 def display_customer_profile(user_info):
     print('Here are the profile details: \n',
-          'Username: ', user_info[1],
-          'Name: ', user_info[3],
-          'Balance: ', user_info[5])
+          'Username: ', user_info[1], '\n',
+          'Name: ', user_info[3], '\n',
+          'User Type: ', user_info[4]), '\n',
 
 
 def view_customer_transactions(user_info):
@@ -406,9 +436,9 @@ def display_customer_menu(user_info):
             elif selection == 2:
                 withdrawal(user_info)
             elif selection == 3:
-                view_customer_profile(user_info)
-            elif selection == 4:
                 view_customer_transactions(user_info)
+            elif selection == 4:
+                view_customer_profile(user_info)
             elif selection == 5:
                 print('Logged out.')
                 break
