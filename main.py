@@ -2,7 +2,6 @@
 # TP030562
 import decimal
 import os
-import platform
 import sys
 
 '''
@@ -33,15 +32,6 @@ def get_last_line_of_file(file_name):
                 return f.readline().decode()
     else:
         return ''
-
-
-# Clear console in Python to ensure clear outputs between screens.
-# Reference: https://www.delftstack.com/howto/python/python-clear-console/
-def clear_console():
-    if platform.system() == 'Windows':
-        os.system('cls')
-    else:
-        os.system('clear')
 
 
 # Get the info of a user in the User.txt data file.
@@ -225,7 +215,6 @@ def create_customer_user():
     # Create local data files
     create_user(customer_username, customer_password, customer_name, 'Customer')
     input('Press ENTER to continue.')
-    clear_console()
 
 
 # Create Deposit/Withdrawal Transactions
@@ -340,7 +329,7 @@ def login():
         if selection != 'q':
             login()  # Recurring function (Reference: https://www.programiz.com/python-programming/recursion)
         else:
-            clear_console()
+            pass
 
 
 def deposit(user_info):
@@ -366,7 +355,6 @@ def deposit(user_info):
         except ValueError:
             print('Please enter a number.')
     input('Press ENTER to continue.')
-    clear_console()
 
 
 def withdrawal(user_info):
@@ -410,7 +398,6 @@ def view_customer_profile(user_info):
     else:
         display_customer_profile(user_info)
     input('Press ENTER to continue...')
-    clear_console()
 
 
 def view_customer_transactions(user_info):
@@ -425,7 +412,6 @@ def view_customer_transactions(user_info):
     else:
         find_and_display_transactions(user_info[0])
     input('Press ENTER to continue...')
-    clear_console()
 
 
 def display_about_this_system():
