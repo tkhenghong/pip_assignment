@@ -5,7 +5,7 @@
 
 Begin
     Function string_is_empty(value)
-        If value is Null or ‘’
+        If value is NULL OR EMPTY
             Return True
         Else
             Return False
@@ -15,21 +15,23 @@ Begin
 
     Function get_last_line_of_file(file_name)
         If file_name exists:
-            Open file_name as f
+            Open file_name AS f
                 Return f.readlines()[-1]
+            Close file_name
         Else
             Return ‘’
         End If
     End Function
 
+
     Function get_user_info(username, password)
         If ‘User.txt’ file exists
             user_file = Open ‘User.txt’
             LOOP line FROM user_file
-                If username in line and password not in line
+                If username FOUND AND password NOT FOUND
                     Display "Incorrect Username/password. Please try again."
                     Return []
-                Elif username in line and password in line
+                Elif username FOUND AND password FOUND
                     Return line
                 End If
             End LOOP
@@ -98,7 +100,7 @@ Begin
 
     Function get_user_name(user_type)
         Declare name
-        while True:
+        while True
             name = input('Please enter the ' + user_type + '\'s name: ')
             If string_is_blank(name)
                 Display user_type, '\'s name is empty.'
@@ -117,16 +119,16 @@ Begin
         result_users = []
         selected_user = []
 
-        If 'User.txt' File Exists:
-            Declare user_file
-            user_file = open('User.txt')
-            LOOP line FROM user_file
-                If search_keyword in line
-                     result_users.append(line)
-                Else
-                    Continue
-                End If
-            End LOOP
+        If 'User.txt' File EXISTS
+            Open user_file
+                LOOP line FROM user_file
+                    If search_keyword FOUND
+                         result_users.append(line)
+                    Else
+                        Continue
+                    End If
+                End LOOP
+            Close user_file
         Else
             Display 'No users found.'
         End If
@@ -135,7 +137,7 @@ Begin
             while True:
                 Display 'Here are the search results: \n'
 
-                LOOP index FROM result_users.length:
+                LOOP index FROM (result_users Array Length):
                     Display index + 1, '. ', result_users[index][0], ' ',
                           result_users[index][3]
                 End LOOP
@@ -143,7 +145,7 @@ Begin
                 Display 'Enter the number to select a user to continue.'
                 Read selection
 
-                If selection > len(result_users) or selection < 1:
+                If selection > (result_users Array Length) or selection < 1:
                     Display 'Invalid selection. Please try again.'
 
                     Declare selection
@@ -167,18 +169,109 @@ Begin
     End Function
 
     Function find_and_display_transactions(user_id)
+        Declare transactions
+        transactions = []
+        if 'Transaction.txt' File EXISTS
+            Declare transaction_file
+            Open transaction_file
+                LOOP line FROM transaction_file:
+                    if user_id Found:
+                        transactions.append(line)
+                End LOOP
+            Close transaction_file
+        Else
+            Pass
+        End If
+
+        If transactions
+            Display 'Here are the customer\'s transactions: \n', 'ID\tOperation\t\tAmount(MYR)'
+
+            LOOP index FROM transactions Length
+                Display transactions[index][0], '\t', transactions[index][2], '\t\t', transactions[index][3]
+            End LOOP
+        Else
+            Display 'No transactions found.'
+        End If
     End Function
 
     Function create_user(username, password, name, user_type)
+        Display 'Saving user info...'
+
+        Declare last_user_line, last_user_info
+        last_user_line = get_last_line_of_file('User.txt')
+
+        # Split the last line user info into an array of texts
+        last_user_info = last_user_line to Array
+
+        If Not string_is_blank(last_user_info[0]) AND username == last_user_info[1]
+            Display 'User is already exist.'
+        Else
+            If string_is_blank(last_user_info[0])
+                existing_user_id = '0'
+            Else
+                existing_user_id = Extract last_user_info[0]
+            End If
+
+            If string_is_blank(last_user_info[0])
+                new_user_id = 1
+            Else
+                new_user_id = existing_user_id + 1
+            End If
+
+            Open user_file
+                Write user_file
+                    'U' + str(new_user_id) + '\t' + username + '\t' + password + '\t' + name + '\t' + user_type + '\n'
+                End Write
+            Close user_file
+
+            Display 'User saved successfully.'
+        End If
     End Function
 
     Function create_admin_user()
+        Declare admin_default_username, admin_default_password
+        admin_default_username = 'admin'
+        admin_default_password = 'password'
+
+        Display 'An admin user is required for initial usage of this system.'
+
+        admin_username = get_username('admin', admin_default_username)
+        admin_password = get_user_password('admin', admin_default_password)
+        admin_name = get_user_name('admin')
+
+        create_user(admin_username, admin_password, admin_name, 'Admin')
     End Function
 
     Function create_customer_user()
+        Display 'Register customer selected.'
+
+        customer_username = get_username('customer', None)
+        customer_password = get_user_password('customer', None)
+        customer_name = get_user_name('customer')
+
+        create_user(customer_username, customer_password, customer_name, 'Customer')
+        Display 'Press ENTER to continue.'
+        Read _
     End Function
 
     Function create_transaction()
+        Declare transaction_file, last_transaction_line, last_transaction
+        transaction_file = Open File 'Transaction.txt'
+
+        last_transaction_line = get_last_line_of_file('Transaction.txt')
+
+        last_transaction = last_transaction_line to Array
+        If string_is_blank(last_transaction[0])
+            existing_transaction_id = 0
+        Else
+            existing_transaction_id = Extract last_transaction[0]
+        End If
+
+        existing_transaction_id = existing_transaction_id + 1
+
+        Write transaction_file
+            'T', existing_transaction_id, '\t', user_id, '\t', transaction_type, '\t', amount, '\n')
+        End Write
     End Function
 
     Function update_balance()
