@@ -15,7 +15,7 @@ Begin
 
     Function get_last_line_of_file(file_name)
         Read file_name
-        If file_name File EXISTS:
+        If file_name File EXISTS
             Open file_name AS f
                 Return f.readlines()[-1]
             Close file_name
@@ -50,17 +50,17 @@ Begin
         while True
             Declare default_username
             If default_username
-                default_sentence = '(Default ' + user_type + '\'s' + ' username: ' + default_username + ')'
+                default_sentence = "(Default " + user_type + "\"s" + " username: " + default_username + ")"
             Else
-                default_sentence = ''
+                default_sentence = ""
             End If
-            Display Please enter the ', user_type, '\'s username. ", default_sentence
+            Display Please enter the ", user_type, "\"s username. ", default_sentence
             Read customer_username
             If string_is_blank(customer_username)
                 If default_username
                     customer_username = default_username
                 Else
-                    Display user_type, '\'s username is empty. Please try again.'
+                    Display user_type, "\"s username is empty. Please try again."
                 End If
             Else
                 Break
@@ -74,26 +74,26 @@ Begin
          while True
             Declare password, confirm_password
             If default_password
-                default_sentence = '(Default ' + user_type + '\'s' + ' password: ' + default_password + ')'
+                default_sentence = "(Default " + user_type + "\"s" + " password: " + default_password + ")"
             Else
-                default_sentence = ''
+                default_sentence = ""
             End If
-            Display Please enter the ', user_type, '\'s password. ", default_sentence
+            Display Please enter the ", user_type, "\"s password. ", default_sentence
             Read customer_password
             If string_is_blank(customer_password)
                 If default_password
                     customer_password = default_password
                 Else
-                    Display user_type, '\'s password is empty. Please try again.'
+                    Display user_type, "\"s password is empty. Please try again."
                 End If
             Else
-                Display 'Confirm the ', user_type, '\'s password: '
+                Display "Confirm the ", user_type, "\"s password: "
                 Read confirm_password
                 If string_is_blank(confirm_password)
-                    Display 'Please try again. Confirm the ', user_type, '\'s password: '
+                    Display "Please try again. Confirm the ", user_type, "\"s password: "
                 Else
                     If password != confirm_password
-                        Display 'The passwords are not the same. Please enter the details again.'
+                        Display "The passwords are not the same. Please enter the details again."
                     Else
                         Break
                     End If
@@ -106,9 +106,9 @@ Begin
     Function get_user_name(user_type)
         Declare user_type, name
         while True
-            name = input('Please enter the ' + user_type + '\'s name: ')
+            name = input("Please enter the " + user_type + "\"s name: ")
             If string_is_blank(name)
-                Display user_type, '\'s name is empty.'
+                Display user_type, "\"s name is empty."
             Else
                 Break
             End If
@@ -118,13 +118,13 @@ Begin
 
     Function find_user()
         Declare search_keyword, result_users, selected_user
-        Display 'Please enter the customer\'s ID or name: '
+        Display "Please enter the customer\"s ID or name: "
         Read search_keyword
 
         result_users = []
         selected_user = []
 
-        If 'User.txt' File EXISTS
+        If "User.txt" File EXISTS
             Open user_file
                 LOOP line FROM user_file
                     If search_keyword FOUND
@@ -135,29 +135,29 @@ Begin
                 End LOOP
             Close user_file
         Else
-            Display 'No users found.'
+            Display "No users found."
         End If
 
         If result_users
             while True:
-                Display 'Here are the search results: \n'
+                Display "Here are the search results: \n"
 
                 LOOP index FROM (result_users Array Length):
-                    Display index + 1, '. ', result_users[index][0], ' ',
+                    Display index + 1, ". ", result_users[index][0], " ",
                           result_users[index][3]
                 End LOOP
                 Declare selection
-                Display 'Enter the number to select a user to continue.'
+                Display "Enter the number to select a user to continue."
                 Read selection
 
                 If selection > (result_users Array Length) or selection < 1:
-                    Display 'Invalid selection. Please try again.'
+                    Display "Invalid selection. Please try again."
 
                     Declare selection
-                    Display 'Press ENTER to continue. Press q to go back.'
+                    Display "Press ENTER to continue. Press q to go back."
                     Read selection
 
-                    If selection == 'q'
+                    If selection == "q"
                         Break
                     Else
                         Continue
@@ -175,7 +175,7 @@ Begin
     Function find_and_display_transactions(user_id)
         Declare user_id, transactions
         transactions = []
-        if 'Transaction.txt' File EXISTS
+        if "Transaction.txt" File EXISTS
             Declare transaction_file
             Open transaction_file
                 LOOP line FROM transaction_file:
@@ -187,31 +187,31 @@ Begin
         End If
 
         If transactions
-            Display 'Here are the customer\'s transactions: \n', 'ID\tOperation\t\tAmount(MYR)'
+            Display "Here are the customer\"s transactions: \n", "ID\tOperation\t\tAmount(MYR)"
 
             LOOP index FROM (transactions Array Length)
-                Display transactions[index][0], '\t', transactions[index][2], '\t\t', transactions[index][3]
+                Display transactions[index][0], "\t", transactions[index][2], "\t\t", transactions[index][3]
             End LOOP
         Else
-            Display 'No transactions found.'
+            Display "No transactions found."
         End If
     End Function
 
     Function create_user(username, password, name, user_type)
         Read username, password, name, user_type
-        Display 'Saving user info...'
+        Display "Saving user info..."
 
         Declare last_user_line, last_user_info
-        last_user_line = get_last_line_of_file('User.txt')
+        last_user_line = get_last_line_of_file("User.txt")
 
         # Split the last line user info into an array of texts
         last_user_info = last_user_line to Array
 
         If Not string_is_blank(last_user_info[0]) AND username == last_user_info[1]
-            Display 'User is already exist.'
+            Display "User is already exist."
         Else
             If string_is_blank(last_user_info[0])
-                existing_user_id = '0'
+                existing_user_id = "0"
             Else
                 existing_user_id = Extract last_user_info[0]
             End If
@@ -224,46 +224,46 @@ Begin
 
             Open user_file
                 Write user_file
-                    'U' + str(new_user_id) + '\t' + username + '\t' + password + '\t' + name + '\t' + user_type + '\n'
+                    "U" + str(new_user_id) + "\t" + username + "\t" + password + "\t" + name + "\t" + user_type + "\n"
                 End Write
             Close user_file
 
-            Display 'User saved successfully.'
+            Display "User saved successfully."
         End If
     End Function
 
     Function create_admin_user()
         Declare admin_default_username, admin_default_password
-        admin_default_username = 'admin'
-        admin_default_password = 'password'
+        admin_default_username = "admin"
+        admin_default_password = "password"
 
-        Display 'An admin user is required for initial usage of this system.'
+        Display "An admin user is required for initial usage of this system."
 
-        admin_username = get_username('admin', admin_default_username)
-        admin_password = get_user_password('admin', admin_default_password)
-        admin_name = get_user_name('admin')
+        admin_username = get_username("admin", admin_default_username)
+        admin_password = get_user_password("admin", admin_default_password)
+        admin_name = get_user_name("admin")
 
-        create_user(admin_username, admin_password, admin_name, 'Admin')
+        create_user(admin_username, admin_password, admin_name, "Admin")
     End Function
 
     Function create_customer_user()
         Declare customer_username, customer_password, customer_name
-        Display 'Register customer selected.'
+        Display "Register customer selected."
 
-        customer_username = get_username('customer', None)
-        customer_password = get_user_password('customer', None)
-        customer_name = get_user_name('customer')
+        customer_username = get_username("customer", None)
+        customer_password = get_user_password("customer", None)
+        customer_name = get_user_name("customer")
 
-        create_user(customer_username, customer_password, customer_name, 'Customer')
-        Display 'Press ENTER to continue.'
+        create_user(customer_username, customer_password, customer_name, "Customer")
+        Display "Press ENTER to continue."
         Read _
     End Function
 
     Function create_transaction()
         Declare transaction_file, last_transaction_line, last_transaction
-        transaction_file = Open File 'Transaction.txt'
+        transaction_file = Open File "Transaction.txt"
 
-        last_transaction_line = get_last_line_of_file('Transaction.txt')
+        last_transaction_line = get_last_line_of_file("Transaction.txt")
 
         last_transaction = last_transaction_line to Array
         If string_is_blank(last_transaction[0])
@@ -275,7 +275,7 @@ Begin
         existing_transaction_id = existing_transaction_id + 1
 
         Write transaction_file
-            'T', existing_transaction_id, '\t', user_id, '\t', transaction_type, '\t', amount, '\n')
+            "T", existing_transaction_id, "\t", user_id, "\t", transaction_type, "\t", amount, "\n")
         End Write
     End Function
 
@@ -284,26 +284,26 @@ Begin
         update_success = False
         withdrawal_eligible = True
 
-        Display 'Saving...'
+        Display "Saving..."
 
         Declare empty_file
-        If 'Balance.txt' File EXISTS OR 'Balance.txt' File EMPTY
+        If "Balance.txt" File EXISTS OR "Balance.txt" File EMPTY
             empty_file = True
         Else
             empty_file = False
         End If
 
         If empty_file
-            If transaction_type == 'Deposit'
-                Open 'Balance.txt' as balance_file
-                    Write user_id + '\t' + str(amount) + '\n'
+            If transaction_type == "Deposit"
+                Open "Balance.txt" as balance_file
+                    Write user_id + "\t" + str(amount) + "\n"
                     update_success = True
                 Close balance_file
             Else
                 withdrawal_eligible = False
             End If
         Else
-            Open 'Balance.txt' as balance_file
+            Open "Balance.txt" as balance_file
                 Declare balance, balance_file_data, user_balance_line_index
 
                 balance_file_data = Get balance_file Data
@@ -317,7 +317,7 @@ Begin
 
                         balance = user_balance[1] to Decimal
 
-                        If transaction_type == 'Deposit'
+                        If transaction_type == "Deposit"
                             balance = balance + amount
                             user_balance[1] = balance
                         Else
@@ -335,22 +335,22 @@ Begin
                 If user_balance
                     If withdrawal_eligible
                         balance_file_data[user_balance_line_index] = user_balance to String
-                        Open 'Balance.txt' as file
+                        Open "Balance.txt" as file
                             Write balance_file_data
                         Close file
                         update_success = True
                     Else
                     End If
                 Else
-                    balance_file = open('Balance.txt', 'a')
-                    balance_file.write(user_id + '\t' + str(amount) + '\n')
+                    balance_file = open("Balance.txt", "a")
+                    balance_file.write(user_id + "\t" + str(amount) + "\n")
                     update_success = True
                 Else If
             Close balance_file
         End If
 
         If not withdrawal_eligible
-            Display 'You don\'t have that amount of money to withdraw.'
+            Display "You don\"t have that amount of money to withdraw."
         Else
         End If
 
@@ -360,11 +360,11 @@ Begin
     Function login()
         while True
             Declare username
-            Display 'Please enter your username: '
+            Display "Please enter your username: "
             Read username
 
             If string_is_blank(username)
-                Display 'Username is empty.'
+                Display "Username is empty."
                 Continue
             Else
                 Break
@@ -373,11 +373,11 @@ Begin
 
         while True
             Declare password
-            Display 'Please enter your password: '
+            Display "Please enter your password: "
             Read password
 
             If string_is_blank(password)
-                Display 'Password is empty.'
+                Display "Password is empty."
                 Continue
             Else
                 break
@@ -387,21 +387,21 @@ Begin
         user_info = get_user_info(username, password)
 
         If user_info
-            Display 'Welcome, ', user_info[3], ' ', user_info[0]
+            Display "Welcome, ", user_info[3], " ", user_info[0]
 
-            If user_info[4] == 'Admin':
+            If user_info[4] == "Admin":
                 display_admin_menu(user_info)
             Else
                 display_customer_menu(user_info)
             End If
         Else
-            Display 'User is not registered.'
+            Display "User is not registered."
 
             Declare selection
-            Display 'Press ENTER to continue. Press q to go back.'
+            Display "Press ENTER to continue. Press q to go back."
             Read selection
 
-            If selection != 'q'
+            If selection != "q"
                 login()
             Else
             End If
@@ -412,33 +412,33 @@ Begin
         while True
             Try
                 Declare amount, update_balance_success
-                Display 'Please enter the amount that you want to deposit(MYR): '
+                Display "Please enter the amount that you want to deposit(MYR): "
                 Read amount
                 If amount Decimal > 2
                     Declare selection
-                    Display 'Currency value not accepted. Press any to try again. Press q to quit.'
+                    Display "Currency value not accepted. Press any to try again. Press q to quit."
                     Read selection
 
-                    If selection != 'q'
+                    If selection != "q"
                         Continue
                     Else
                         Break
                     Else If
                 Else
-                    update_balance_success = update_balance(user_info[0], 'Deposit', amount)
+                    update_balance_success = update_balance(user_info[0], "Deposit", amount)
                 End If
 
 
                 If update_balance_success
-                    create_transaction(user_info[0], 'Deposit', amount)
-                    Display 'Deposit successful.'
+                    create_transaction(user_info[0], "Deposit", amount)
+                    Display "Deposit successful."
                 Else
-                    Display 'Deposit failed.'
+                    Display "Deposit failed."
                 End If
                 Break
             Exception ValueError
-                Display 'Please enter a number.'
-        Display 'Press ENTER to continue.'
+                Display "Please enter a number."
+        Display "Press ENTER to continue."
         Read _
         End while
     End Function
@@ -447,97 +447,97 @@ Begin
         while True
             Try
                 Declare amount, update_balance_success
-                Display 'Please enter the amount that you want to withdraw(MYR): '
+                Display "Please enter the amount that you want to withdraw(MYR): "
                 Read amount
 
                 If amount amount < -2
                     Declare selection
-                    Display 'Currency value not accepted. Press any to try again. Press q to quit.'
+                    Display "Currency value not accepted. Press any to try again. Press q to quit."
                     Read selection
 
-                    If selection != 'q'
+                    If selection != "q"
                         Continue
                     Else
                         Break
                     End If
                 Else
-                    update_balance_success = update_balance(user_info[0], 'Withdrawal', amount)
+                    update_balance_success = update_balance(user_info[0], "Withdrawal", amount)
                 End If
 
                 If update_balance_success
-                    create_transaction(user_info[0], 'Withdrawal', amount)
-                    Display 'Withdrawal successful.'
+                    create_transaction(user_info[0], "Withdrawal", amount)
+                    Display "Withdrawal successful."
                 Else
-                    Display 'Withdrawal failed.'
+                    Display "Withdrawal failed."
                 End If
 
-                Display 'Press ENTER to continue.'
+                Display "Press ENTER to continue."
                 Read _
                 Break
             Exception ValueError
-                Display 'Please enter a number.'
+                Display "Please enter a number."
         End while
     End Function
 
     Function display_customer_profile(user_info)
         Read user_info
-        Display 'Here are the profile details: \n',
-              'Username: ', user_info[1], '\n',
-              'Name: ', user_info[3], '\n',
-              'User Type: ', user_info[4], '\n'
+        Display "Here are the profile details: \n",
+              "Username: ", user_info[1], "\n",
+              "Name: ", user_info[3], "\n",
+              "User Type: ", user_info[4], "\n"
     End Function
 
     Function view_customer_profile(user_info)
         Read user_info
-        Display 'View Customer Profile selected.'
+        Display "View Customer Profile selected."
         Declare selected_customer
 
-        if user_info[4] == 'Admin':
+        if user_info[4] == "Admin":
             selected_customer = find_user()
             If selected_customer
                 display_customer_profile(selected_customer)
             Else
-                Display 'No profile displayed.'
+                Display "No profile displayed."
             End If
         Else
             display_customer_profile(user_info)
         End If
 
-        Display 'Press ENTER to continue...'
+        Display "Press ENTER to continue..."
         Read _
     End Function
 
     Function view_customer_transactions(user_info)
         Read user_info
-        Display 'View Customer Transactions selected.'
+        Display "View Customer Transactions selected."
         Declare selected_customer
 
-        If user_info[4] == 'Admin':
+        If user_info[4] == "Admin":
             selected_customer = find_user()
 
             If selected_customer
                 find_and_display_transactions(selected_customer[0])
             Else
-                Display 'No transactions displayed.'
+                Display "No transactions displayed."
             End If
         Else
             find_and_display_transactions(user_info[0])
         End If
-        Display 'Press ENTER to continue...'
+        Display "Press ENTER to continue..."
         Read _
     End Function
 
     Function display_welcome()
-        Display 'Welcome to Online Banking System.'
+        Display "Welcome to Online Banking System."
 
         while True
             Try
                 Declare selection
-                Display 'Here are a list that you can perform: \n' +
-                                      '1. Login\n' +
-                                      '2. About this system\n' +
-                                      '3. Exit\n' +
-                                      'Enter the number of the functions above to proceed.\n'
+                Display "Here are a list that you can perform: \n" +
+                                      "1. Login\n" +
+                                      "2. About this system\n" +
+                                      "3. Exit\n" +
+                                      "Enter the number of the functions above to proceed.\n"
                 Read selection
 
                 If selection == 1
@@ -545,12 +545,12 @@ Begin
                 Elif selection == 2
                     display_about_this_system()
                 Elif selection == 3
-                    Display 'Thank you for using this system. See you next time!'
+                    Display "Thank you for using this system. See you next time!"
                     Break
                 Else:
-                    Display 'Invalid input. Please try again.'
+                    Display "Invalid input. Please try again."
             Exception ValueError
-                Display 'Please enter a number.'
+                Display "Please enter a number."
                 Continue
         End while
     End Function
@@ -560,12 +560,12 @@ Begin
         while True
             Try
                 Declare selection
-                Display 'Here are a list that you can perform: \n' +
-                                      '1. Create new customer\n' +
-                                      '2. View Customer\'s Profile\n' +
-                                      '3. View Customer\'s Transactions\n' +
-                                      '4. Logout\n' +
-                                      'Enter the number of the function to proceed.\n'
+                Display "Here are a list that you can perform: \n" +
+                                      "1. Create new customer\n" +
+                                      "2. View Customer\"s Profile\n" +
+                                      "3. View Customer\"s Transactions\n" +
+                                      "4. Logout\n" +
+                                      "Enter the number of the function to proceed.\n"
                 Read selection
 
                 If selection == 1
@@ -575,13 +575,13 @@ Begin
                 Elif selection == 3
                     view_customer_transactions(user_info)
                 Elif selection == 4
-                    Display 'Logged out.'
+                    Display "Logged out."
                     Break
                 Else
-                    Display 'Invalid input. Please try again.'
+                    Display "Invalid input. Please try again."
                 End If
             Exception ValueError
-                Display 'Please enter a number.'
+                Display "Please enter a number."
                 Continue
         End while
     End Function
@@ -591,13 +591,13 @@ Begin
         while True
             Try
                 Declare selection
-                Display 'Here are a list that you can perform: \n' +
-                                      '1. Make Deposit\n' +
-                                      '2. Make Withdrawal\n' +
-                                      '3. View Own Transactions\n' +
-                                      '4. View Own Profile\n' +
-                                      '5. Logout\n' +
-                                      'Enter the number of the function to proceed.\n'
+                Display "Here are a list that you can perform: \n" +
+                                      "1. Make Deposit\n" +
+                                      "2. Make Withdrawal\n" +
+                                      "3. View Own Transactions\n" +
+                                      "4. View Own Profile\n" +
+                                      "5. Logout\n" +
+                                      "Enter the number of the function to proceed.\n"
                 Read selection
 
                 If selection == 1
@@ -609,22 +609,22 @@ Begin
                 Elif selection == 4
                     view_customer_profile(user_info)
                 Elif selection == 5
-                    Display 'Logged out.'
+                    Display "Logged out."
                     Break
                 Else
-                    Display 'Invalid input. Please try again.'
+                    Display "Invalid input. Please try again."
                 End If
 
             Exception ValueError
-                Display 'Please enter a number.'
+                Display "Please enter a number."
                 Continue
         End while
     End Function
 
     Function init()
-        If 'User.txt' File EXISTS
-            Display 'Initialize first time running...'
-            Display 'Local data exists.'
+        If "User.txt" File EXISTS
+            Display "Initialize first time running..."
+            Display "Local data exists."
         Else
             create_admin_user()
         End If
