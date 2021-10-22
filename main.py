@@ -182,7 +182,7 @@ def create_user(username, password, name, user_type):
     # Split the last line user info into an array of texts
     last_user_info = last_user_line.rstrip().split('\t')
 
-    if username == last_user_info[1]:
+    if not string_is_blank(last_user_info[0]) and username == last_user_info[1]:
         print('User is already exist.')
     else:
         # Get the 1st information of the last_user_info array,
@@ -255,7 +255,7 @@ def update_balance(user_id, transaction_type, amount):
 
     # If File is blank, by checking file size.
     # https://stackoverflow.com/a/2507871
-    empty_file = os.stat('Balance.txt').st_size == 0
+    empty_file = not os.path.isfile('Balance.txt') or os.stat('Balance.txt').st_size == 0
 
     if empty_file:
         if transaction_type == 'Deposit':
@@ -334,15 +334,29 @@ def login():
         else:  # Customer
             display_customer_menu(user_info)
     else:
-        login()  # Recurring function (Reference: https://www.programiz.com/python-programming/recursion)
-    clear_console()
+        print('User is not registered.')
+
+        selection = input('Press ENTER to continue. Press q to go back.')
+        if selection != 'q':
+            login()  # Recurring function (Reference: https://www.programiz.com/python-programming/recursion)
+        else:
+            clear_console()
 
 
 def deposit(user_info):
     while True:
         try:
-            amount = decimal.Decimal(input('Please enter the amount that you want to deposit: '))
-            update_balance_success = update_balance(user_info[0], 'Deposit', amount)
+            # Get number of decimal places (number validation)
+            # Reference: https://stackoverflow.com/a/6190291
+            amount = decimal.Decimal(input('Please enter the amount that you want to deposit(MYR): '))
+            if amount.as_tuple().exponent < -2:
+                selection = input('Currency value not accepted. Press any to try again. Press q to quit.')
+                if selection != 'q':
+                    continue
+                else:
+                    break
+            else:
+                update_balance_success = update_balance(user_info[0], 'Deposit', amount)
 
             if update_balance_success:
                 create_transaction(user_info[0], 'Deposit', amount)
@@ -358,8 +372,15 @@ def deposit(user_info):
 def withdrawal(user_info):
     while True:
         try:
-            amount = decimal.Decimal(input('Please enter the amount that you want to withdraw: '))
-            update_balance_success = update_balance(user_info[0], 'Withdrawal', amount)
+            amount = decimal.Decimal(input('Please enter the amount that you want to withdraw(MYR): '))
+            if amount.as_tuple().exponent < -2:
+                selection = input('Currency value not accepted. Press any to try again. Press q to quit.')
+                if selection != 'q':
+                    continue
+                else:
+                    break
+            else:
+                update_balance_success = update_balance(user_info[0], 'Withdrawal', amount)
 
             if update_balance_success:
                 create_transaction(user_info[0], 'Withdrawal', amount)
