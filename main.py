@@ -107,7 +107,7 @@ def get_user_name(user_type):
 
 # Search user in the User.txt data file by ID
 def find_user() -> list[str]:
-    search_keyword = input('Please enter the customer\'s ID or name')
+    search_keyword = input('Please enter the customer\'s ID or name: ')
     result_users = []
     selected_user = []
     if os.path.isfile('User.txt'):
