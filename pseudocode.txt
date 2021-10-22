@@ -52,18 +52,18 @@ Begin
         while True
             Declare default_username
             If default_username
-                default_sentence = "(Default " + user_type + "\"s" + " username " + default_username + ")"
+                default_sentence = "(Default " + user_type + "\'s" + " username " + default_username + ")"
             Else
                 default_sentence = ""
             End If
-            Display Please enter the ", user_type, "\"s username. ", default_sentence
+            Display Please enter the ", user_type, "\'s username. ", default_sentence
             Read customer_username
             If string_is_blank(customer_username)
                 If default_username
                     customer_username = default_username
                     Break
                 Else
-                    Display user_type, "\"s username is empty. Please try again."
+                    Display user_type, "\'s username is empty. Please try again."
                 End If
             Else
                 Break
@@ -77,23 +77,23 @@ Begin
          while True
             Declare password, confirm_password
             If default_password
-                default_sentence = "(Default " + user_type + "\"s" + " password " + default_password + ")"
+                default_sentence = "(Default " + user_type + "\'s" + " password " + default_password + ")"
             Else
                 default_sentence = ""
             End If
-            Display Please enter the ", user_type, "\"s password. ", default_sentence
+            Display Please enter the ", user_type, "\'s password. ", default_sentence
             Read customer_password
             If string_is_blank(customer_password)
                 If default_password
                     customer_password = default_password
                 Else
-                    Display user_type, "\"s password is empty. Please try again."
+                    Display user_type, "\'s password is empty. Please try again."
                 End If
             Else
-                Display "Confirm the ", user_type, "\"s password "
+                Display "Confirm the ", user_type, "\'s password "
                 Read confirm_password
                 If string_is_blank(confirm_password)
-                    Display "Please try again. Confirm the ", user_type, "\"s password "
+                    Display "Please try again. Confirm the ", user_type, "\'s password "
                 Else
                     If password != confirm_password
                         Display "The passwords are not the same. Please enter the details again."
@@ -109,10 +109,10 @@ Begin
     Function get_user_name(user_type)
         Declare user_type, name
         while True
-            Display "Please enter the " + user_type + "\"s name "
+            Display "Please enter the ", user_type, "\'s name "
             Read name
             If string_is_blank(name)
-                Display user_type, "\"s name is empty."
+                Display user_type, "\'s name is empty."
             Else
                 Break
             End If
@@ -122,7 +122,7 @@ Begin
 
     Function find_user()
         Declare search_keyword, result_users, selected_user
-        Display "Please enter the customer\"s ID or name: "
+        Display "Please enter the customer\'s ID or name: "
         Read search_keyword
 
         result_users = []
@@ -193,7 +193,7 @@ Begin
         End If
 
         If transactions
-            Display "Here are the customer\"s transactions: \n", "ID\tOperation\t\tAmount(MYR)"
+            Display "Here are the customer\'s transactions: \n", "ID\tOperation\t\tAmount(MYR)"
             Declare index
             LOOP index FROM transactions TO transactions.length STEP 1
                 Display transactions[index][0], "\t", transactions[index][2], "\t\t", transactions[index][3]
@@ -356,7 +356,7 @@ Begin
         End If
 
         If not withdrawal_eligible
-            Display "You don\"t have that amount of money to withdraw."
+            Display "You don\'t have that amount of money to withdraw."
         Else
         End If
 
@@ -568,8 +568,8 @@ Begin
                 Declare selection
                 Display "Here are a list that you can perform: \n" +
                                       "1. Create new customer\n" +
-                                      "2. View Customer\"s Profile\n" +
-                                      "3. View Customer\"s Transactions\n" +
+                                      "2. View Customer\'s Profile\n" +
+                                      "3. View Customer\'s Transactions\n" +
                                       "4. Logout\n" +
                                       "Enter the number of the function to proceed.\n"
                 Read selection
