@@ -36,20 +36,20 @@ def get_last_line_of_file(file_name):
 
 # Get the info of a user in the User.txt data file.
 # Returns a list of strings. (Reference: https://stackoverflow.com/a/39397293)
-def get_user_info(username, password) -> list[str]:
+def get_user_info(username, password):
+    user_info = []
     if os.path.isfile("User.txt"):
         user_file = open("User.txt")
         for line in user_file:
             line = line.rstrip().split("\t")
             if username in line and password not in line:
                 print("Incorrect username/password. Please try again.")
-                return []
             elif username in line and password in line:
-                return line
-        return []
+                user_info = line
+        user_file.close()
     else:
         print("User is not registered.")
-        return []
+    return user_info
 
 
 def get_username(user_type, default_username):
