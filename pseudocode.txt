@@ -17,31 +17,33 @@ Begin
         Read file_name
         If file_name File EXISTS
             Open file_name AS f
-                Return f.readlines()[-1]
+                Return f.last_line
             Close file_name
         Else
-            Return ‘’
+            Return ""
         End If
     End Function
 
 
     Function get_user_info(username, password)
         Read username, password
-        If ‘User.txt’ File EXISTS
-            user_file = Open ‘User.txt’
-            LOOP line FROM user_file
+        Declare user_info
+        If "User.txt" File EXISTS
+            user_file = Open "User.txt"
+            Declare line
+            LOOP line FROM user_file TO user_file.length STEP user_file.next_line
                 If username FOUND AND password NOT FOUND
                     Display "Incorrect Username/password. Please try again."
-                    Return []
                 Elif username FOUND AND password FOUND
-                    Return line
+                    user_info = line
+                Else
                 End If
+            user_file.close()
             End LOOP
-            Return []
         Else
             Display "User is not registered"
-            Return []
         End If
+        Return user_info
     End Function
 
 
@@ -50,7 +52,7 @@ Begin
         while True
             Declare default_username
             If default_username
-                default_sentence = "(Default " + user_type + "\"s" + " username: " + default_username + ")"
+                default_sentence = "(Default " + user_type + "\"s" + " username " + default_username + ")"
             Else
                 default_sentence = ""
             End If
@@ -59,6 +61,7 @@ Begin
             If string_is_blank(customer_username)
                 If default_username
                     customer_username = default_username
+                    Break
                 Else
                     Display user_type, "\"s username is empty. Please try again."
                 End If
@@ -74,7 +77,7 @@ Begin
          while True
             Declare password, confirm_password
             If default_password
-                default_sentence = "(Default " + user_type + "\"s" + " password: " + default_password + ")"
+                default_sentence = "(Default " + user_type + "\"s" + " password " + default_password + ")"
             Else
                 default_sentence = ""
             End If
@@ -87,10 +90,10 @@ Begin
                     Display user_type, "\"s password is empty. Please try again."
                 End If
             Else
-                Display "Confirm the ", user_type, "\"s password: "
+                Display "Confirm the ", user_type, "\"s password "
                 Read confirm_password
                 If string_is_blank(confirm_password)
-                    Display "Please try again. Confirm the ", user_type, "\"s password: "
+                    Display "Please try again. Confirm the ", user_type, "\"s password "
                 Else
                     If password != confirm_password
                         Display "The passwords are not the same. Please enter the details again."
@@ -106,7 +109,8 @@ Begin
     Function get_user_name(user_type)
         Declare user_type, name
         while True
-            name = input("Please enter the " + user_type + "\"s name: ")
+            Display "Please enter the " + user_type + "\"s name "
+            Read name
             If string_is_blank(name)
                 Display user_type, "\"s name is empty."
             Else
@@ -126,7 +130,8 @@ Begin
 
         If "User.txt" File EXISTS
             Open user_file
-                LOOP line FROM user_file
+                Declare line
+                LOOP line FROM user_file TO user_file.length STEP 1
                     If search_keyword FOUND
                          result_users.append(line)
                     Else
@@ -139,10 +144,10 @@ Begin
         End If
 
         If result_users
-            while True:
+            while True
                 Display "Here are the search results: \n"
-
-                LOOP index FROM (result_users Array Length):
+                Declare index
+                LOOP index FROM result_users TO result_users.length STEP 1
                     Display index + 1, ". ", result_users[index][0], " ",
                           result_users[index][3]
                 End LOOP
@@ -150,7 +155,7 @@ Begin
                 Display "Enter the number to select a user to continue."
                 Read selection
 
-                If selection > (result_users Array Length) or selection < 1:
+                If selection > (result_users Array Length) or selection < 1
                     Display "Invalid selection. Please try again."
 
                     Declare selection
@@ -178,8 +183,9 @@ Begin
         if "Transaction.txt" File EXISTS
             Declare transaction_file
             Open transaction_file
-                LOOP line FROM transaction_file:
-                    if user_id Found:
+                Declare line
+                LOOP line FROM transaction_file TO transaction_file.length STEP 1
+                    if user_id Found
                         transactions.append(line)
                 End LOOP
             Close transaction_file
@@ -188,8 +194,8 @@ Begin
 
         If transactions
             Display "Here are the customer\"s transactions: \n", "ID\tOperation\t\tAmount(MYR)"
-
-            LOOP index FROM (transactions Array Length)
+            Declare index
+            LOOP index FROM transactions TO transactions.length STEP 1
                 Display transactions[index][0], "\t", transactions[index][2], "\t\t", transactions[index][3]
             End LOOP
         Else
@@ -309,8 +315,8 @@ Begin
                 balance_file_data = Get balance_file Data
                 user_balance = []
                 user_balance_line_index = -1
-
-                LOOP index FROM (balance_file_data Array Length):
+                Declare index
+                LOOP index FROM balance_file_data TO balance_file_data.length STEP 1
                     stripped_line = Strip balance_file_data[index]
                     If user_id in stripped_line
                         user_balance = stripped_line To Array
@@ -389,7 +395,7 @@ Begin
         If user_info
             Display "Welcome, ", user_info[3], " ", user_info[0]
 
-            If user_info[4] == "Admin":
+            If user_info[4] == "Admin"
                 display_admin_menu(user_info)
             Else
                 display_customer_menu(user_info)
@@ -492,7 +498,7 @@ Begin
         Display "View Customer Profile selected."
         Declare selected_customer
 
-        if user_info[4] == "Admin":
+        if user_info[4] == "Admin"
             selected_customer = find_user()
             If selected_customer
                 display_customer_profile(selected_customer)
@@ -512,7 +518,7 @@ Begin
         Display "View Customer Transactions selected."
         Declare selected_customer
 
-        If user_info[4] == "Admin":
+        If user_info[4] == "Admin"
             selected_customer = find_user()
 
             If selected_customer
@@ -547,7 +553,7 @@ Begin
                 Elif selection == 3
                     Display "Thank you for using this system. See you next time!"
                     Break
-                Else:
+                Else
                     Display "Invalid input. Please try again."
             Exception ValueError
                 Display "Please enter a number."
