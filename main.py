@@ -292,6 +292,8 @@ def update_balance(user_id, transaction_type, amount):
                 break
         if user_balance:
             if withdrawal_eligible:
+                # Convert list to string
+                # Reference: https://stackoverflow.com/a/5618893
                 balance_file_data[user_balance_line_index] = '\t'.join(user_balance) + '\n'
                 with open('Balance.txt', 'w') as file:
                     file.writelines(balance_file_data)
