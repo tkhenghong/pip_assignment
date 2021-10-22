@@ -1,0 +1,110 @@
+# TEOH KHENG HONG
+# TP030562
+# Pseudocodes
+
+
+Begin
+    Function string_is_empty(value)
+        If value is Null or ‘’
+            Return True
+        Else
+            Return False
+        End If
+    End Function
+
+
+    Function get_last_line_of_file(file_name)
+        If file_name exists:
+            Open file_name as f
+                Return f.readlines()[-1]
+        Else
+            Return ‘’
+        End If
+    End Function
+
+    Function get_user_info(username, password)
+        If ‘User.txt’ file exists
+            user_file = Open ‘User.txt’
+            LOOP line FROM user_file
+                If username in line and password not in line
+                    Display "Incorrect Username/password. Please try again."
+                    Return []
+                Elif username in line and password in line
+                    Return line
+                End If
+            End LOOP
+            Return []
+        Else
+            Display "User is not registered"
+            Return []
+        End If
+
+
+    Function get_username(user_type, default_username)
+    End Function
+
+    Function get_user_password(user_type, default_password)
+    End Function
+
+    Function get_user_name(user_type)
+    End Function
+
+    Function find_user()
+    End Function
+
+    Function find_and_display_transactions(user_id)
+    End Function
+
+    Function create_user(username, password, name, user_type)
+    End Function
+
+    Function create_admin_user()
+    End Function
+
+    Function create_customer_user()
+    End Function
+
+    Function create_transaction()
+    End Function
+
+    Function update_balance()
+    End Function
+
+    Function login()
+    End Function
+
+    Function deposit()
+    End Function
+
+    Function withdrawal()
+    End Function
+
+    Function display_customer_profile(user_info)
+    End Function
+
+    Function view_customer_profile(user_info)
+    End Function
+
+    Function view_customer_transactions(user_info)
+    End Function
+
+    Function display_about_this_system()
+    End Function
+
+    Function display_welcome()
+    End Function
+
+    Function display_admin_menu(user_info)
+    End Function
+
+    Function display_customer_menu(user_info)
+    End Function
+
+    Function init()
+    End Function
+
+
+
+
+
+

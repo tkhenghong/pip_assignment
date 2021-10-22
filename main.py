@@ -42,11 +42,9 @@ def get_user_info(username, password) -> list[str]:
         for line in user_file:
             line = line.rstrip().split('\t')
             if username in line and password not in line:
-                print('Incorrect Username/password. Please try again.')
+                print('Incorrect username/password. Please try again.')
                 return []
             elif username in line and password in line:
-                # ID \t username \t password \t name \t user_type
-                # Returning ID, username and user type.
                 return line
         return []
     else:
