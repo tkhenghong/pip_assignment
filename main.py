@@ -61,7 +61,7 @@ def get_username(user_type, default_username):
                 customer_username = default_username
                 break
             else:
-                print(user_type + '\'s username is empty. Please try again.')
+                print(user_type, '\'s username is empty. Please try again.')
                 continue
         else:
             break
@@ -439,9 +439,6 @@ def display_welcome():
                                   '3. Exit\n' +
                                   'Enter the number of the functions above to proceed.\n'))
 
-            # Switch case in Python.
-            # References:   https://towardsdatascience.com/switch-case-statements-are-coming-to-python-d0caf7b2bfd3
-            #               https://stackoverflow.com/questions/60208/replacements-for-switch-statement-in-python
             if selection == 1:
                 login()
             elif selection == 2:
@@ -468,9 +465,6 @@ def display_admin_menu(user_info):
                                   '4. Logout\n' +
                                   'Enter the number of the function to proceed.\n'))
 
-            # Switch case in Python.
-            # References:   https://towardsdatascience.com/switch-case-statements-are-coming-to-python-d0caf7b2bfd3
-            #               https://stackoverflow.com/questions/60208/replacements-for-switch-statement-in-python
             if selection == 1:
                 create_customer_user()
             elif selection == 2:
@@ -518,9 +512,9 @@ def display_customer_menu(user_info):
 
 # Initialization of the program to check the user existence
 def init():
-    print('Initialize first time running...')
     # Check local data files exist
     if os.path.isfile('User.txt'):
+        print('Initialize first time running...')
         print('Local data exists.')
     else:
         create_admin_user()

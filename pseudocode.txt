@@ -14,6 +14,7 @@ Begin
 
 
     Function get_last_line_of_file(file_name)
+        Read file_name
         If file_name File EXISTS:
             Open file_name AS f
                 Return f.readlines()[-1]
@@ -25,6 +26,7 @@ Begin
 
 
     Function get_user_info(username, password)
+        Read username, password
         If ‘User.txt’ File EXISTS
             user_file = Open ‘User.txt’
             LOOP line FROM user_file
@@ -40,9 +42,11 @@ Begin
             Display "User is not registered"
             Return []
         End If
+    End Function
 
 
     Function get_username(user_type, default_username)
+        Read user_type, default_username
         while True
             Declare default_username
             If default_username
@@ -66,6 +70,7 @@ Begin
     End Function
 
     Function get_user_password(user_type, default_password)
+        Read user_type, default_password
          while True
             Declare password, confirm_password
             If default_password
@@ -99,7 +104,7 @@ Begin
     End Function
 
     Function get_user_name(user_type)
-        Declare name
+        Declare user_type, name
         while True
             name = input('Please enter the ' + user_type + '\'s name: ')
             If string_is_blank(name)
@@ -168,7 +173,7 @@ Begin
     End Function
 
     Function find_and_display_transactions(user_id)
-        Declare transactions
+        Declare user_id, transactions
         transactions = []
         if 'Transaction.txt' File EXISTS
             Declare transaction_file
@@ -193,6 +198,7 @@ Begin
     End Function
 
     Function create_user(username, password, name, user_type)
+        Read username, password, name, user_type
         Display 'Saving user info...'
 
         Declare last_user_line, last_user_info
@@ -241,6 +247,7 @@ Begin
     End Function
 
     Function create_customer_user()
+        Declare customer_username, customer_password, customer_name
         Display 'Register customer selected.'
 
         customer_username = get_username('customer', None)
@@ -273,7 +280,7 @@ Begin
     End Function
 
     Function update_balance(user_id, transaction_type, amount)
-        Declare update_success, withdrawal_eligible
+        Declare user_id, transaction_type, amount, update_success, withdrawal_eligible
         update_success = False
         withdrawal_eligible = True
 
@@ -473,6 +480,7 @@ Begin
     End Function
 
     Function display_customer_profile(user_info)
+        Read user_info
         Display 'Here are the profile details: \n',
               'Username: ', user_info[1], '\n',
               'Name: ', user_info[3], '\n',
@@ -480,6 +488,7 @@ Begin
     End Function
 
     Function view_customer_profile(user_info)
+        Read user_info
         Display 'View Customer Profile selected.'
         Declare selected_customer
 
@@ -499,6 +508,7 @@ Begin
     End Function
 
     Function view_customer_transactions(user_info)
+        Read user_info
         Display 'View Customer Transactions selected.'
         Declare selected_customer
 
@@ -546,6 +556,7 @@ Begin
     End Function
 
     Function display_admin_menu(user_info)
+        Read user_info
         while True
             Try
                 Declare selection
@@ -576,6 +587,7 @@ Begin
     End Function
 
     Function display_customer_menu(user_info)
+        Read user_info
         while True
             Try
                 Declare selection
