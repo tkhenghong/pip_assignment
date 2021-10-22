@@ -41,15 +41,129 @@ Begin
 
 
     Function get_username(user_type, default_username)
+        while True
+            Declare default_username
+            If default_username
+                default_sentence = '(Default ' + user_type + '\'s' + ' username: ' + default_username + ')'
+            Else
+                default_sentence = ''
+            End If
+            Display Please enter the ', user_type, '\'s username. ", default_sentence
+            Read customer_username
+            If string_is_blank(customer_username)
+                If default_username
+                    customer_username = default_username
+                Else
+                    Display user_type, '\'s username is empty. Please try again.'
+                End If
+            Else
+                Break
+            End If
+        End while
+        Return customer_username
     End Function
 
     Function get_user_password(user_type, default_password)
+         while True
+            Declare password, confirm_password
+            If default_password
+                default_sentence = '(Default ' + user_type + '\'s' + ' password: ' + default_password + ')'
+            Else
+                default_sentence = ''
+            End If
+            Display Please enter the ', user_type, '\'s password. ", default_sentence
+            Read customer_password
+            If string_is_blank(customer_password)
+                If default_password
+                    customer_password = default_password
+                Else
+                    Display user_type, '\'s password is empty. Please try again.'
+                End If
+            Else
+                Display 'Confirm the ', user_type, '\'s password: '
+                Read confirm_password
+                If string_is_blank(confirm_password)
+                    Display 'Please try again. Confirm the ', user_type, '\'s password: '
+                Else
+                    If password != confirm_password
+                        Display 'The passwords are not the same. Please enter the details again.'
+                    Else
+                        Break
+                    End If
+                End If
+            End If
+        End while
+        Return password
     End Function
 
     Function get_user_name(user_type)
+        Declare name
+        while True:
+            name = input('Please enter the ' + user_type + '\'s name: ')
+            If string_is_blank(name)
+                Display user_type, '\'s name is empty.'
+            Else
+                Break
+            End If
+        End while
+        Return name
     End Function
 
     Function find_user()
+        Declare search_keyword, result_users, selected_user
+        Display 'Please enter the customer\'s ID or name: '
+        Read search_keyword
+
+        result_users = []
+        selected_user = []
+
+        If 'User.txt' File Exists:
+            Declare user_file
+            user_file = open('User.txt')
+            LOOP line FROM user_file
+                If search_keyword in line
+                     result_users.append(line)
+                Else
+                    Continue
+                End If
+            End LOOP
+        Else
+            Display 'No users found.'
+        End If
+
+        If result_users
+            while True:
+                Display 'Here are the search results: \n'
+
+                LOOP index FROM result_users.length:
+                    Display index + 1, '. ', result_users[index][0], ' ',
+                          result_users[index][3]
+                End LOOP
+                Declare selection
+                Display 'Enter the number to select a user to continue.'
+                Read selection
+
+                If selection > len(result_users) or selection < 1:
+                    Display 'Invalid selection. Please try again.'
+
+                    Declare selection
+                    Display 'Press ENTER to continue. Press q to go back.'
+                    Read selection
+
+                    If selection == 'q'
+                        Break
+                    Else
+                        Continue
+                    End If
+                Else
+                    selected_user = result_users[selection - 1]
+                    Break
+                End If
+            End while
+        Else
+            Pass
+        End If
+        return selected_user
     End Function
 
     Function find_and_display_transactions(user_id)
