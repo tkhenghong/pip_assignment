@@ -35,7 +35,6 @@ def get_last_line_of_file(file_name):
 
 
 # Get the info of a user in the User.txt data file.
-# Returns a list of strings. (Reference: https://stackoverflow.com/a/39397293)
 def get_user_info(username, password):
     user_info = []
     if os.path.isfile("User.txt"):
@@ -226,6 +225,7 @@ def create_transaction(user_id, transaction_type, amount):
     existing_transaction_id = 0 if string_is_blank(last_transaction[0]) else int(last_transaction[0].split("T", 1)[1])
     existing_transaction_id += 1
 
+    # Input the strings with format(). Reference: https://stackoverflow.com/a/39397293
     transaction_file.write(
         "{}\t{}\t{}\t{}\n".format("T" + str(existing_transaction_id), user_id, transaction_type, amount))
     transaction_file.close()
