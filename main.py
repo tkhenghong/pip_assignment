@@ -103,7 +103,7 @@ def get_user_name(user_type):
 
 
 # Search user in the User.txt data file by ID
-def find_user() -> list[str]:
+def find_user():
     search_keyword = input("Please enter the customer\'s ID or name: ")
     result_users = []
     selected_user = []
@@ -155,7 +155,7 @@ def find_and_display_transactions(user_id):
         print("Here are the customer\'s transactions: \n",
               "ID\tOperation\t\tAmount(MYR)")
         for index in range(len(transactions)):
-            print(transactions[index][0], "\t", transactions[index][2], "\t\t", transactions[index][3])
+            print(transactions[index][0], "\t", transactions[index][2], "\t\t", round(decimal.Decimal(transactions[index][3]), 2))
     else:
         print("No transactions found.")
 
@@ -352,6 +352,8 @@ def deposit(user_info):
             break
         except ValueError:
             print("Please enter a number.")
+        except decimal.InvalidOperation:
+            print("Please enter a number.")
     input("Press ENTER to continue.")
 
 
@@ -375,6 +377,8 @@ def withdrawal(user_info):
             input("Press ENTER to continue.")
             break
         except ValueError:
+            print("Please enter a number.")
+        except decimal.InvalidOperation:
             print("Please enter a number.")
 
 
