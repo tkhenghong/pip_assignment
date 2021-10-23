@@ -147,7 +147,7 @@ Begin
             while True
                 Display "Here are the search results: \n"
                 Declare index
-                LOOP index FROM result_users TO result_users.length STEP 1
+                LOOP index FROM 1 TO result_users.length STEP 1
                     Display index + 1, ". ", result_users[index][0], " ",
                           result_users[index][3]
                 End LOOP
@@ -155,7 +155,7 @@ Begin
                 Display "Enter the number to select a user to continue."
                 Read selection
 
-                If selection > (result_users Array Length) or selection < 1
+                If selection > result_users.length OR selection < 1
                     Display "Invalid selection. Please try again."
 
                     Declare selection
@@ -213,18 +213,14 @@ Begin
         # Split the last line user info into an array of texts
         last_user_info = last_user_line to Array
 
-        If Not string_is_blank(last_user_info[0]) AND username == last_user_info[1]
+        If NOT string_is_blank(last_user_info[0]) AND username == last_user_info[1]
             Display "User is already exist."
         Else
             If string_is_blank(last_user_info[0])
                 existing_user_id = "0"
-            Else
-                existing_user_id = Extract last_user_info[0]
-            End If
-
-            If string_is_blank(last_user_info[0])
                 new_user_id = 1
             Else
+                existing_user_id = Extract last_user_info[0]
                 new_user_id = existing_user_id + 1
             End If
 
@@ -303,8 +299,8 @@ Begin
             If transaction_type == "Deposit"
                 Open "Balance.txt" as balance_file
                     Write user_id + "\t" + str(amount) + "\n"
-                    update_success = True
                 Close balance_file
+                update_success = True
             Else
                 withdrawal_eligible = False
             End If
@@ -348,14 +344,15 @@ Begin
                     Else
                     End If
                 Else
-                    balance_file = open("Balance.txt", "a")
-                    balance_file.write(user_id + "\t" + str(amount) + "\n")
+                    Open "Balance.txt"
+                            Write user_id + "\t" + str(amount) + "\n"
+                    Close file
                     update_success = True
                 Else If
             Close balance_file
         End If
 
-        If not withdrawal_eligible
+        If NOT withdrawal_eligible
             Display "You don\'t have that amount of money to withdraw."
         Else
         End If
