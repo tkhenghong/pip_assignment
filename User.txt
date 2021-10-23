@@ -1,3 +1,0 @@
-U1	admin	password	Admin	Admin
-U2	customer	password	Test Customer	Customer
-U3	tkhenghong	password	TKH	Customer

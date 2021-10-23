@@ -6,9 +6,9 @@ import sys
 
 """
 3 files will be created by the system, which are:
-1. User.txt (Store user"s credentials and profile information)
-2. Balance.txt (Store Customer"s balance)
-3. Transaction.txt (Store Customer"s transaction)
+1. User.txt (Store user's credentials and profile information)
+2. Balance.txt (Store Customer's balance)
+3. Transaction.txt (Store Customer's transaction)
 """
 
 
@@ -53,14 +53,14 @@ def get_user_info(username, password):
 
 def get_username(user_type, default_username):
     while True:
-        customer_username = input("Please enter the " + user_type + "\"s username. " + (
-            "(Default " + user_type + "\"s" + " username: " + default_username + ")" if default_username else ""))
+        customer_username = input("Please enter the " + user_type + "\'s username. " + (
+            "(Default " + user_type + "\'s" + " username: " + default_username + ")" if default_username else ""))
         if string_is_blank(customer_username):
             if default_username:
                 customer_username = default_username
                 break
             else:
-                print(user_type, "\"s username is empty. Please try again.")
+                print(user_type, "\'s username is empty. Please try again.")
                 continue
         else:
             break
@@ -70,19 +70,19 @@ def get_username(user_type, default_username):
 def get_user_password(user_type, default_password):
     while True:
         password = input(
-            "Please enter the " + user_type + "\"s password. " + (
-                "(Default " + user_type + "\"s" + " password: " + default_password + ")" if default_password else ""))
+            "Please enter the " + user_type + "\'s password. " + (
+                "(Default " + user_type + "\'s" + " password: " + default_password + ")" if default_password else ""))
         if string_is_blank(password):
             if default_password:
                 password = default_password
                 break
             else:
-                print(user_type + "\"s password is empty. Please try again")
+                print(user_type + "\'s password is empty. Please try again")
                 continue
         else:
-            confirm_password = input("Confirm the " + user_type + "\"s password: ")
+            confirm_password = input("Confirm the " + user_type + "\'s password: ")
             if string_is_blank(confirm_password):
-                print("Please try again. Confirm the " + user_type + "\"s password: ")
+                print("Please try again. Confirm the " + user_type + "\'s password: ")
             else:
                 if password != confirm_password:
                     print("The passwords are not the same. Please enter the details again.")
@@ -93,9 +93,9 @@ def get_user_password(user_type, default_password):
 
 def get_user_name(user_type):
     while True:
-        name = input("Please enter the " + user_type + "\"s name: ")
+        name = input("Please enter the " + user_type + "\'s name: ")
         if string_is_blank(name):
-            print(user_type + "\"s name is empty.")
+            print(user_type + "\'s name is empty.")
             continue
         else:
             break
@@ -104,7 +104,7 @@ def get_user_name(user_type):
 
 # Search user in the User.txt data file by ID
 def find_user() -> list[str]:
-    search_keyword = input("Please enter the customer\"s ID or name: ")
+    search_keyword = input("Please enter the customer\'s ID or name: ")
     result_users = []
     selected_user = []
     if os.path.isfile("User.txt"):
@@ -152,7 +152,7 @@ def find_and_display_transactions(user_id):
         transaction_file.close()
 
     if transactions:
-        print("Here are the customer\"s transactions: \n",
+        print("Here are the customer\'s transactions: \n",
               "ID\tOperation\t\tAmount(MYR)")
         for index in range(len(transactions)):
             print(transactions[index][0], "\t", transactions[index][2], "\t\t", transactions[index][3])
@@ -460,8 +460,8 @@ def display_admin_menu(user_info):
         try:
             selection = int(input("Here are a list that you can perform: \n" +
                                   "1. Create new customer\n" +
-                                  "2. View Customer\"s Profile\n" +
-                                  "3. View Customer\"s Transactions\n" +
+                                  "2. View Customer\'s Profile\n" +
+                                  "3. View Customer\'s Transactions\n" +
                                   "4. Logout\n" +
                                   "Enter the number of the function to proceed.\n"))
 
