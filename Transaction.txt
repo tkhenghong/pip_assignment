@@ -1,0 +1,5 @@
+T1	U2	Deposit	50.00
+T2	U2	Withdrawal	25
+T3	U2	Withdrawal	10
+T4	U2	Deposit	25
+T5	U2	Deposit	12

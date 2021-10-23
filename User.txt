@@ -1,0 +1,2 @@
+U1	admin	password	Test Admin	Admin
+U2	customer	password	Test Customer	Customer
